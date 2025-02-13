@@ -8,16 +8,17 @@ def load_data(path):
 def estimate_price(mileage, theta0, theta1):
 	return theta0 + (theta1 * mileage)
 
+def normalize_data(data):
+    mean = np.mean(data, axis=0)
+    std_dev = np.std(data, axis=0)
+    norm_data = (data - mean) / std_dev
+    return norm_data, mean, std_dev
+
 def train(data, learning_rate, iterations):
 	m = len(data)
 	theta0 = 0
 	theta1 = 0
-
-	scaler_x = MinMaxScaler()
-	scaler_y = MinMaxScaler()
-	norm_data = data.copy()
-	norm_data[:, 0] = scaler_x.fit_transform(norm_data[:, 0].reshape(-1, 1)).flatten()
-	norm_data[:, 1] = scaler_y.fit_transform(norm_data[:, 1].reshape(-1, 1)).flatten()
+	norm_data, mean_data, std_dev_data = normalize_data(data)
 
 	for i in range(iterations):
 		predictions = estimate_price(norm_data[:, 0], theta0, theta1)
@@ -26,23 +27,23 @@ def train(data, learning_rate, iterations):
 		err_theta0 = np.sum(errors)
 		err_theta1 = np.sum(errors * norm_data[:, 0])
 
-		theta0 = theta0 - learning_rate * (1/m) * err_theta0
-		theta1 = theta1 - learning_rate * (1/m) * err_theta1
+		theta0 = theta0 - learning_rate * err_theta0 / m
+		theta1 = theta1 - learning_rate * err_theta1 / m
 
-		print(f"\niter #{i}:\n\ntheta0: {theta0}\ntheta1: {theta1}")
+		if (i % 100 == 0):
+			print(f"iter #{i}:\ntheta0: {theta0}\ntheta1: {theta1}\n")
 
-	precision = get_precision(data, norm_data, theta0, theta1)
-	theta0 = scaler_y.inverse_transform([[theta0]])[0][0]
-	theta1 = theta1 * (scaler_y.scale_[0] / scaler_x.scale_[0])
+	accuracy = get_accuracy(data, norm_data, theta0, theta1)
+	theta0 = theta0 * std_dev_data[1] + mean_data[1] - (theta1 * mean_data[0] * std_dev_data[1]) / std_dev_data[0]
+	theta1 = theta1 * (std_dev_data[1] / std_dev_data[0])
 
 
-	return theta0, theta1, norm_data, precision
+	return theta0, theta1, norm_data, accuracy
 
-def get_precision(data, norm_data, theta0, theta1):
+def get_accuracy(data, norm_data, theta0, theta1):
 	"""
 	Calcul du R²
 	"""
-
 	predictions = estimate_price(norm_data[:, 0], theta0, theta1)
 	squared_sum = np.sum((data[:, 1] - np.mean(data[:, 1]))**2)
 	resid_sum =	np.sum((norm_data[:, 1] - predictions)**2)
@@ -53,15 +54,15 @@ def get_precision(data, norm_data, theta0, theta1):
 def main():
 	data = load_data("data.csv")
 
-	learning_rate = 0.001
-	iterations = 100
+	learning_rate = 0.01
+	iterations = 1000
 
-	theta0, theta1, norm_data, precision = train(data, learning_rate, iterations)
+	theta0, theta1, norm_data, accuracy = train(data, learning_rate, iterations)
 
 	with open("thetas.txt", "w") as thetas:
 		thetas.write(f"{theta0}\n{theta1}")
 
-	print(f"Model trained (lr: {learning_rate}, it: {iterations}).\nPrecision: {precision * 100}%")
+	print(f"Model trained (lr: {learning_rate}, it: {iterations}).\naccuracy: {accuracy * 100}%")
 
 if __name__ == "__main__":
     main()
