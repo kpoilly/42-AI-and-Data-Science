@@ -1,12 +1,21 @@
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+matplotlib.use('gtk3agg')
 
 
 def estimate_price(mileage, theta0, theta1):
+    """
+    Formula used to estimate a price using thetas
+    """
     return theta0 + (theta1 * mileage)
 
 
 def plot_prediction(data, theta0, theta1):
+    """
+    Show a graph represneting the dataset
+    and the regression line obtained by training
+    """
     plt.figure()
 
     plt.scatter(data[:, 0], data[:, 1], label="Original data")
@@ -21,5 +30,5 @@ def plot_prediction(data, theta0, theta1):
     plt.ylabel("Price")
     plt.legend()
     plt.grid(True)
-    # plt.show() # Ne marche pas sur WSL, changer ça à l'ecole
+    # plt.show()
     plt.savefig("plot_predict.png")

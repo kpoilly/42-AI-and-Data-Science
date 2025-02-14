@@ -3,11 +3,17 @@ from utils import estimate_price, plot_prediction
 
 
 def load_data(path):
+    """
+    Load the dataset
+    """
     data = np.genfromtxt(path, delimiter=",", skip_header=1)
     return data
 
 
 def normalize_data(data):
+    """
+    Normalize the dataset
+    """
     mean = np.mean(data, axis=0)
     std_dev = np.std(data, axis=0)
     norm_data = (data - mean) / std_dev
@@ -15,6 +21,10 @@ def normalize_data(data):
 
 
 def train(data, learning_rate, iterations):
+    """
+    Train the model on a normalized dataset
+    using the formulas given by the subject
+    """
     m = len(data)
     theta0 = 0
     theta1 = 0

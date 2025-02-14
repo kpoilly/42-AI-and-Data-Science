@@ -3,6 +3,10 @@ from train import estimate_price
 
 
 def load_thetas(path):
+    """
+    Load the file containing the thetas after training
+    and use them to predict prices
+    """
     try:
         with open(path, "r") as thetas:
             theta0 = float(thetas.readline())
@@ -19,12 +23,15 @@ def main():
     user_input = None
     while (user_input is None):
         user_input = input("Enter mileage: ")
+        if (user_input == "q"):
+            break
         try:
             mileage = float(user_input)
+            print(f"Estimated price: \
+{estimate_price(mileage, theta0, theta1)}")
+            user_input = None
         except ValueError:
             user_input = None
-
-    print(f"Estimated price:  {estimate_price(mileage, theta0, theta1)}")
 
 
 if __name__ == "__main__":
