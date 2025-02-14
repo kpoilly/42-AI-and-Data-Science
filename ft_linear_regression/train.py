@@ -37,7 +37,8 @@ def train(data, learning_rate, iterations):
             print(f"iter #{i}:\ntheta0: {theta0}\ntheta1: {theta1}\n")
 
     accuracy = get_accuracy(data, norm_data, theta0, theta1)
-    theta0 = theta0 * std_dev_data[1] + mean_data[1] - (theta1 * mean_data[0] * std_dev_data[1]) / std_dev_data[0]
+    theta0 = theta0 * std_dev_data[1] + mean_data[1] \
+        - (theta1 * mean_data[0] * std_dev_data[1]) / std_dev_data[0]
     theta1 = theta1 * (std_dev_data[1] / std_dev_data[0])
 
     return theta0, theta1, accuracy
@@ -65,7 +66,8 @@ def main():
     with open("thetas.txt", "w") as thetas:
         thetas.write(f"{theta0}\n{theta1}")
 
-    print(f"Model trained (lr: {learning_rate}, it: {iterations}).\naccuracy: {accuracy * 100}%")
+    print(f"Model trained (lr: {learning_rate}, it: {iterations}).\
+          \naccuracy: {accuracy * 100}%")
 
 
 if __name__ == "__main__":
