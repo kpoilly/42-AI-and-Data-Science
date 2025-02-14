@@ -10,7 +10,7 @@ matplotlib.use('gtk3agg')
 
 def main():
     try:
-        path = "animal.jpeg"
+        path = "animl.jpeg"
         img_array = ft_load(path)
         print(img_array)
 
