@@ -1,7 +1,8 @@
 import numpy as np
 
 
-def give_bmi(height: list[int | float], weight: list[int | float]) -> list[int | float]:
+def give_bmi(height: list[int | float],
+             weight: list[int | float]) -> list[int | float]:
     """
     Give BMI for a given list of heights and weights
 
@@ -13,7 +14,8 @@ def give_bmi(height: list[int | float], weight: list[int | float]) -> list[int |
         Numpy array of BMI results.
     """
 
-    if not isinstance(height, (list, np.ndarray)) or not isinstance(weight, (list, np.ndarray)):
+    if not isinstance(height, (list, np.ndarray))\
+            or not isinstance(weight, (list, np.ndarray)):
         raise TypeError("height and weight should be list or numpy arrays.")
 
     height = np.array(height)
@@ -22,7 +24,9 @@ def give_bmi(height: list[int | float], weight: list[int | float]) -> list[int |
     if height.size != weight.size:
         raise ValueError("lists should be the same size.")
 
-    if not np.issubdtype(height.dtype, np.number) or not np.issubdtype(weight.dtype, np.number) or np.any(height <= 0) or np.any(weight <= 0):
+    if not np.issubdtype(height.dtype, np.number)\
+            or not np.issubdtype(weight.dtype, np.number)\
+            or np.any(height <= 0) or np.any(weight <= 0):
         raise TypeError("lists should only contain positive ints or floats.")
 
     return weight / (height**2)
