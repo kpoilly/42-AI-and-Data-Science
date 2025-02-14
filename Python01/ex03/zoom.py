@@ -14,7 +14,7 @@ def main():
         img_array = ft_load(path)
         print(img_array)
 
-        img_array = img_array[100:500, 400:800, 0]
+        img_array = img_array[100:500, 450:850, 0]
         img_array = np.squeeze(img_array)
         print("New shape after slicing:", img_array.shape)
         print(img_array)

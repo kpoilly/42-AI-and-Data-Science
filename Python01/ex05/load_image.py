@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+from matplotlib.image import imread
 
 
 def ft_load(path: str) -> np.array:
@@ -18,11 +18,10 @@ def ft_load(path: str) -> np.array:
     if ".jpg" not in path.lower() and ".jpeg" not in path.lower():
         raise ValueError("Image should only be in .jpg or .jpeg format")
 
-    img = cv2.imread(path)
+    img = imread(path)
     if img is None:
         raise AssertionError("Image could not be loaded. (is path correct ?)")
 
     img_array = np.array(img)
-
     print("The shape of image is:", img_array.shape)
     return img_array
