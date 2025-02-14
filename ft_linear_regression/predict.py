@@ -10,7 +10,7 @@ def load_thetas(path):
             return theta0, theta1
     except FileNotFoundError:
         print(f"Error.\nFile '{path}' not found.\
-              Make sure to train the model first!\n", file=sys.stderr)
+ Make sure to train the model first!", file=sys.stderr)
         exit()
 
 
