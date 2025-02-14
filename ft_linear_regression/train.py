@@ -1,13 +1,10 @@
 import numpy as np
+from utils import estimate_price, plot_prediction
 
 
 def load_data(path):
     data = np.genfromtxt(path, delimiter=",", skip_header=1)
     return data
-
-
-def estimate_price(mileage, theta0, theta1):
-    return theta0 + (theta1 * mileage)
 
 
 def normalize_data(data):
@@ -68,6 +65,7 @@ def main():
 
     print(f"Model trained (lr: {learning_rate}, it: {iterations}).\
           \naccuracy: {accuracy * 100}%")
+    plot_prediction(data, theta0, theta1)
 
 
 if __name__ == "__main__":
