@@ -1,3 +1,4 @@
+import sys
 import matplotlib
 import matplotlib.pyplot as plt
 from load_csv import load
@@ -8,7 +9,12 @@ def main():
     dataset = load("life_expectancy_years.csv")
     country = "France"
 
-    country_data = dataset[dataset["country"] == country].iloc[0, 2:]
+    try:
+        country_data = dataset[dataset["country"] == country].iloc[0, 2:]
+    except IndexError:
+        print(f"Error.\n{country} is not in the dataset!",
+              file=sys.stderr)
+        exit()
     years = country_data.index.astype(int)
     life_expectancy = country_data.values.astype(float)
 
