@@ -8,12 +8,16 @@ def main():
     dataset = load("life_expectancy_years.csv")
     country = "France"
 
+    country_data = dataset[dataset["country"] == country].iloc[0, 2:]
+    years = country_data.index.astype(int)
+    life_expectancy = country_data.values.astype(float)
+
     plt.figure()
-    plt.scatter(dataset[:, 1:])
+    plt.plot(years, life_expectancy, linestyle='-')
+
     plt.title(f"{country} Life expectancy Projections")
     plt.xlabel("Life expectancy")
     plt.ylabel("Year")
-    plt.legend()
     plt.grid(False)
     # plt.show()
     plt.savefig(f"{country}_life_expectancy.png")
