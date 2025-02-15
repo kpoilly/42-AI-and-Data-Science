@@ -11,13 +11,13 @@
 # **************************************************************************** #
 
 all:
-	docker compose -f ./deployment/docker_compose/docker-compose.dev.yml -p onyx-stack up -d --pull always --force-recreate
+	docker compose -f ./onyx/deployment/docker_compose/docker-compose.dev.yml -p onyx-stack up -d --pull always --force-recreate
 
 clone:
 	git clone git@github.com:onyx-dot-app/onyx.git
 
 down:
-	docker compose -f ./deployment/docker_compose/docker-compose.dev.yml down
+	docker compose -f ./onyx/deployment/docker_compose/docker-compose.dev.yml -p onyx-stack down
 
 clean:
 	docker system prune -af
