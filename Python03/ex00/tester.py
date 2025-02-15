@@ -12,3 +12,6 @@ print(Ned.die.__doc__)
 print("---")
 Lyanna = Stark("Lyanna", False)
 print(Lyanna.__dict__)
+
+# from S1E9 import Character
+# hodor = Character("hodor")
