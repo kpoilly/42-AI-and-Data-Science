@@ -3,12 +3,12 @@ from S1E7 import Baratheon, Lannister
 
 class King(Baratheon, Lannister):
     """
-A class representing the Baratheon Family,
-inheriting from the Character class.
+A class representing the King,
+inheriting from Baratheon and Lannister class.
     """
     def __init__(self, first_name, is_alive=True):
         """
-Stark class (inheriting from Character class) constructor.
+King class (inheriting from Character class) constructor.
 
 args:
     first_name (str)

@@ -8,7 +8,7 @@ inheriting from the Character class.
     """
     def __init__(self, first_name, is_alive=True):
         """
-Stark class (inheriting from Character class) constructor.
+Baratheon class (inheriting from Character class) constructor.
 
 args:
     first_name (str)
@@ -34,7 +34,7 @@ inheriting from the Character class.
     """
     def __init__(self, first_name, is_alive=True):
         """
-Stark class (inheriting from Character class) constructor.
+Lannister class (inheriting from Character class) constructor.
 
 args:
     first_name (str)
