@@ -29,11 +29,13 @@ def ft_quartile(vec):
 
 
 def ft_std(vec):
-    return 0
+    return ft_var(vec) ** 0.5
 
 
 def ft_var(vec):
-    return 0
+    mean = ft_mean(vec)
+    res = sum((i - mean) ** 2 for i in vec) / len(vec)
+    return res
 
 
 def ft_statistics(*args, **kwargs) -> None:
