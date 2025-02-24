@@ -6,8 +6,14 @@ from utils import load_data
 from model import DenseLayer
 
 
-def train(network, lr, batch_size, epochs):
-    pass    
+def train(network, lr, batch_size, epochs, X):
+    batch_indexes = np.random.permutation(batch_size)
+    
+    for epoch in range(epochs):
+        
+        for batch in batch_indexes:
+            batch_X = X[batch]
+            print(batch_X)
 
 
 def main():
@@ -28,7 +34,7 @@ def main():
         network.append(DenseLayer(12, 12))
     network.append(DenseLayer(12, 2)) # output layer
     
-    train(network, args.lr, args.batch_size, args.epochs)
+    train(network, args.lr, args.batch_size, args.epochs, X)
 
 
 if __name__ == "__main__":
