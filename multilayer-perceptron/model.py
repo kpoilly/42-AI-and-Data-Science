@@ -1,12 +1,22 @@
 import sys
 import numpy as np
 
-class Layer:
+class DenseLayer:
 	"""
  class representing a layer of the multilayer perceptron.
 	"""
-    def __init__(self):
-        pass
+    def __init__(self, n_inputs, n_neurons):
+        self.weights = 0.10 * np.random.randn(n_inputs, n_neurons)
+        self.biases = np.zeros((1, n_neurons))
     
-    def forward(self):
-        pass
+    def forward(self, inputs):
+        self.output = np.dot(inputs, self.weights) + self.biases
+
+
+class ReLU:
+	"""
+ class representing the ReLU activation function.
+	"""
+	@staticmethod
+	def forward(self, inputs):
+		self.output = np.maximum(0, inputs)

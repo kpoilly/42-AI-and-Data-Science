@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib
+from sklearn.model_selection import train_test_split
+
 
 def load_data(path):
     """
@@ -7,15 +9,12 @@ def load_data(path):
     """
     try:
         data = np.genfromtxt(path, delimiter=",", dtype=str)
-        results = data[:, 1]
-        data = data[:, 2:].astype(float)
-        results = np.where(results == "M", 1, 0)
-        return data, results
+        return data
     
     except FileNotFoundError:
-        return None, None
+        return None
     except IsADirectoryError:
-        return None, None
+        return None
     
 def normalize_data(data):
     """

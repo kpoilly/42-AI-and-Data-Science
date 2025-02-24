@@ -1,17 +1,14 @@
-# from model import
+import sys
 from utils import load_data
 
 
 def main():
-    data_path = None
-    while (data_path is None):
-        data_path = input("dataset: ")
-        X, res = load_data(data_path)
-        if X is None:
-            print("Error: dataset not found.")
-            data_path = None
-    
-        
+    X, res = load_data("data_train.csv")
+    if X is None:
+        print("Error: Cannot found data_train.csv\nDid you separate the data file first?", file=sys.stderr)
+        return 1
+
+
 
 if __name__ == "__main__":
     main()
