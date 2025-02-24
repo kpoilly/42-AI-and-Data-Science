@@ -6,8 +6,11 @@ def load_data(path):
     """
     Load the dataset
     """
-    data = np.genfromtxt(path, delimiter=",", skip_header=1)
-    return data
+    try:
+        data = np.genfromtxt(path, delimiter=",", skip_header=1)
+        return data
+    except FileNotFoundError:
+        return None
 
 
 def normalize_data(data):
@@ -64,6 +67,9 @@ def get_accuracy(data, norm_data, theta0, theta1):
 
 def main():
     data = load_data("data.csv")
+    if data is None:
+        print("Error: dataset not found.")
+        return 1
 
     learning_rate = 0.01
     iterations = 1000
