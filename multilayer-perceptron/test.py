@@ -4,7 +4,6 @@ import numpy as np
 
 def test(X, network):
 	X = normalize_data_spec(X[1:].astype(float), network.mean, network.std_dev)
-	y = X[0].astype(float)
 
 	inputs = X
 	for layer in network.network:
