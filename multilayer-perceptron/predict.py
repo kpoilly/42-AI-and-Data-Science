@@ -1,20 +1,20 @@
 import sys
+import argparse
 import numpy as np
-from utils import load_data, load_network, normalize_data_spec, get_accuracy, one_hot
+from utils import load_data, load_network, load_networks, normalize_data_spec, get_accuracy, one_hot
 
-def validate(X, network, mean, std_dev):
-    validate_X = normalize_data_spec(X[:, 1:].astype(float), mean, std_dev)
+def validate(X, network):
+    validate_X = normalize_data_spec(X[:, 1:].astype(float), network.mean, network.std_dev)
     validate_y = X[:, 0].astype(float)
     
     inputs = validate_X
-    for layer in network:
+    for layer in network.network:
         layer.forward(inputs)
         layer.activation.forward(layer.output)
         inputs = layer.activation.output
         
-    accuracy = get_accuracy(inputs, validate_y)
-    print("Validation complete.")
-    print(f"Accuracy: {round(accuracy, 4) * 100}%.")
+    network.accuracy = get_accuracy(inputs, validate_y)
+    print(f"Accuracy for Model #{network.id}: {round(network.accuracy, 4) * 100}%.")
         
 
 def main():
@@ -25,16 +25,21 @@ def main():
     else:
         print("data/data_validation.csv successfully loaded.\n")
     
-    try:
-        mean = np.load("save/mean.npy")
-        std_dev = np.load("save/std_dev.npy")
-        network = load_network()
-    except FileNotFoundError:
-        print("Model and/or normalization settings not found, be sure to train the model first.", file=sys.stderr)
-        return 1
+    parser = argparse.ArgumentParser(description="Prediction parameters")
+    parser.add_argument('--compare', action="store_true", help="Activate comparison between every previously trained models")
+    args = parser.parse_args()
     
-    validate(X, network, mean, std_dev)
-
+    if args.compare:
+        networks = load_networks()
+        print()
+        for network in networks:
+            validate(X, network)
+    else:
+        network = load_network()
+        if not network:
+            return 1
+        else:
+            validate(X, network)
 
 if __name__ == "__main__":
     main()

@@ -3,6 +3,22 @@ from typing import Type
 import numpy as np
 
 
+class Network:
+    """
+Class representing the Artificial Neural Network
+    """
+    def __init__(self):
+        self.id = 0
+        self.network = []
+        self.params = ""
+        self.mean = 0
+        self.std_dev = 0
+        self.train_losses = []
+        self.train_accu = []
+        self.val_losses = []
+        self.val_accu = []
+        self.accuracy = 0
+
 class ActivationFunction:
     """
 Template class for activation functions

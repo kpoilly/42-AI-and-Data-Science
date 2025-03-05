@@ -1,6 +1,9 @@
+import os
+import re
 import numpy as np
-import matplotlib
+import matplotlib.pyplot as plt
 import pickle
+import datetime
 from sklearn.model_selection import train_test_split
 
 
@@ -39,15 +42,43 @@ def one_hot(y_true, n_outputs):
     return one_hot
 
 def save_network(network):
-    with open("save/model.pkl", "wb") as f:
+    files = os.listdir("models")
+    model_files = [f for f in files if re.match(r"model#\d+\.pkl", f)]
+    network.id = len(model_files) + 1
+    
+    with open(f"models/model#{network.id}.pkl", "wb") as f:
         pickle.dump(network, f)
-    print("Network successfully saved in save/model.pkl.")
+    print(f"Network successfully saved in models/model#{network.id}.pkl.")
     
 def load_network():
-    with open("save/model.pkl", "rb") as f:
-        network = pickle.load(f)
-    print("Network successfully loaded.")
+    nb_model = None
+    while (nb_model is None):
+        nb_model = input("Model number: ")
+        if (nb_model == "q"):
+            return None
+        try:
+            print(f"Loading model#{nb_model}...")
+            with open(f"models/model#{nb_model}.pkl", "rb") as f:
+                network = pickle.load(f)
+            print(f"model#{nb_model} successfully loaded.\n")
+        except FileNotFoundError:
+            print(f"Error: Couldn't load model#{nb_model}.\n")
+            nb_model = None
+    
     return network
+
+def load_networks():
+    networks = []
+    
+    files = os.listdir("models")
+    model_files = [f for f in files if re.match(r"model#\d+\.pkl", f)]
+    for model in model_files:
+        with open(f"models/{model}", "rb") as f:
+            networks.append(pickle.load(f))
+            print(f"{model} successfully loaded.")
+    
+    return networks
+        
 
 def get_accuracy(predictions, y_true):
     """
@@ -76,4 +107,13 @@ def get_val_loss(network, val_X, val_y, loss_function):
     
     val_loss = loss_function.calculate(inputs, val_y)
     return np.mean(val_loss)
-    
+
+def draw_loss(network):
+    plt.plot(network.train_losses, label="Training loss")
+    plt.plot(network.val_losses, label="Validation loss")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.title("Training and Validation loss")
+    plt.legend()
+    plt.text(0.05, 0.05, network.params, transform=plt.gca().transAxes, fontsize=10, verticalalignment='bottom')
+    plt.savefig(f"visuals/model#{network.id}_loss.png")
