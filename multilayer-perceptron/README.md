@@ -9,14 +9,14 @@
 
 
 ## Programs:
-**- separate.py :**
+### - separate.py :
    Separates the given data in 2 part, training set and validation set.
         
    Args: 
    
          `--train_size`, size of the training set.
 
-**- train.py :**
+### - train.py :
    Trains the model on the previously separated data, using the training set for training, and the validation set for validation / early-stopping.
 
    Args: 
@@ -34,7 +34,7 @@
         python train.py --epochs 30000 --batch_size 455 --patience 8 --lr 0.00125 
     ```
 
-**- predict.py :**
+### - predict.py :
    Calculates the accuracy and the Binary Entropy Loss of a given model number, or compares every models saved in a graph.
     
    Args:
