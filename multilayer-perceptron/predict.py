@@ -3,7 +3,7 @@ import numpy as np
 from utils import load_data, load_network, normalize_data_spec, get_accuracy, one_hot
 
 def validate(X, network, mean, std_dev):
-    validate_X, _, _ = normalize_data_spec(X[:, 1:].astype(float), mean, std_dev)
+    validate_X = normalize_data_spec(X[:, 1:].astype(float), mean, std_dev)
     validate_y = X[:, 0].astype(float)
     
     inputs = validate_X
@@ -14,7 +14,7 @@ def validate(X, network, mean, std_dev):
         
     accuracy = get_accuracy(inputs, validate_y)
     print("Validation complete.")
-    print(f"Accuracy: {accuracy * 100}%.")
+    print(f"Accuracy: {round(accuracy, 4) * 100}%.")
         
 
 def main():
