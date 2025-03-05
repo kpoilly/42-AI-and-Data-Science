@@ -96,7 +96,7 @@ def main():
                         help="Number of layers between input and output layer")
     parser.add_argument('--layersW', type=int, default=16, choices=range(2, 256),
                         help="Number of neurons per layers")
-    parser.add_argument('--epochs', type=int, default=10000, choices=range(0, 100001),
+    parser.add_argument('--epochs', type=int, default=10000, choices=range(0, 500001),
                         help="Number of epochs")
     parser.add_argument('--lr', type=float, default=0.001,
                         help="Learning rate")

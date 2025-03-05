@@ -32,6 +32,9 @@ def main():
 
     if args.compare:
         networks = load_networks()
+        if not networks:
+            print("No networks found.")
+            return 1
         print()
         for network in networks:
             validate(X, network)

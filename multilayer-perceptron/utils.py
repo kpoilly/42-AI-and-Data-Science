@@ -46,6 +46,7 @@ def one_hot(y_true, n_outputs):
 
 
 def save_network(network):
+    os.makedirs("models", exist_ok=True)
     files = os.listdir("models")
     model_files = [f for f in files if re.match(r"model#\d+\.pkl", f)]
     network.id = len(model_files) + 1
@@ -122,7 +123,10 @@ def get_val_loss(network, val_X, val_y, loss_function):
 
 
 def draw_loss(network):
+    os.makedirs("visuals", exist_ok=True)
     plt.clf()
+    plt.figure(figsize=(10, 6))
+
     plt.plot(network.train_losses, label="Training loss")
     plt.plot(network.val_losses, label="Validation loss")
     plt.xlabel("Epochs")
@@ -134,7 +138,10 @@ def draw_loss(network):
 
 
 def draw_accu(network):
+    os.makedirs("visuals", exist_ok=True)
     plt.clf()
+    plt.figure(figsize=(10, 6))
+
     plt.plot(network.train_accu, label="Training accuracy")
     plt.plot(network.val_accu, label="Validation accuracy")
     plt.xlabel("Epochs")
@@ -146,6 +153,7 @@ def draw_accu(network):
 
 
 def draw_comp_accuracy(networks):
+    os.makedirs("visuals", exist_ok=True)
     plt.clf()
     plt.figure(figsize=(10, 6))
 
@@ -161,6 +169,7 @@ def draw_comp_accuracy(networks):
 
 
 def draw_comp_loss(networks):
+    os.makedirs("visuals", exist_ok=True)
     plt.clf()
     plt.figure(figsize=(10, 6))
 
