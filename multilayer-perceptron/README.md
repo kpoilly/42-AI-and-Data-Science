@@ -8,12 +8,6 @@
    Learn core concepts like backpropagation and gradient descent, evaluate model performance using binary cross-entropy, and explore advanced optimization techniques.
 
 
-![image](https://github.com/user-attachments/assets/a413d016-557f-4962-914e-76308567e116)
-
-
-![image](https://github.com/user-attachments/assets/7cdd47b4-9baf-43f9-98ac-4dbcb0c5d145)
-
-
 ## Programs:
 ### - separate.py :
    Separates the given data in 2 part, training set and validation set.
@@ -52,3 +46,11 @@
     numpy
     matplotlib
     sickit-learn
+
+
+![image](https://github.com/user-attachments/assets/a413d016-557f-4962-914e-76308567e116)
+
+
+![image](https://github.com/user-attachments/assets/7cdd47b4-9baf-43f9-98ac-4dbcb0c5d145)
+
+
