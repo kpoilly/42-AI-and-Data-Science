@@ -28,7 +28,15 @@ class DenseLayer:
         self.activation = activation
     
     def forward(self, inputs):
-        self.output = np.dot(len(inputs[0]), self.weights) + self.biases
+        self.inputs = inputs
+        self.output = np.dot(inputs, self.weights) + self.biases
+        
+    def backward(self, grad, lr):
+        grad = self.activation.backward(grad)
+        weights_grad = np.dot(self.inputs.T, grad)
+        self.weights -= lr * weights_grad
+        self.biases -= lr * np.mean(grad, axis=0, keepdims=True)
+        return np.dot(grad, self.weights.T)
 
 
 class ReLU(ActivationFunction):
@@ -36,7 +44,11 @@ class ReLU(ActivationFunction):
  class representing the ReLU activation function.
     """
     def forward(self, inputs):
+        self.inputs = inputs
         self.output = np.maximum(0, inputs)
+    
+    def backward(self, grad):
+        return grad * (self.inputs > 0)
 
         
 class Softmax(ActivationFunction):
@@ -47,11 +59,26 @@ class representing the Softmax acivation function.
         exp_val = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
         prob = exp_val / np.sum(exp_val, axis=1, keepdims=True)
         self.output = prob
+        
+    def backward(self, grad):
+        return grad
 
-class BinaryCrossEntropy(LossFunction):
+class CrossEntropy(LossFunction):
     """
-class representing the BinaryCrossEntropy loss calculation function.
+class representing the CrossEntropy loss calculation function.
     """
     def forward(self, y_pred, y_true):
         y_pred_clipped = np.clip(y_pred, 1e-7, 1 - 1e-7)
-        return -(y_true / y_pred_clipped - (1 - y_true) / (1 - y_pred_clipped)) / len(y_pred)
+        if len(y_true.shape) == 1:
+            confidences = y_pred_clipped[range(len(y_pred)), y_true]
+        elif len(y_true.shape) == 2:
+            confidences = np.sum(y_pred_clipped * y_true, axis=1)
+        return -np.log(confidences)
+    
+    def backward(self, y_pred, y_true):
+        y_pred_clipped = np.clip(y_pred, 1e-7, 1 - 1e-7)
+        if len(y_true.shape) == 1:
+            one_hot = np.zeros((len(y_true), y_pred.shape[1]))
+            one_hot[range(len(y_true)), y_true] = 1
+            y_true = one_hot
+        return (y_pred_clipped -  y_true) / len(y_pred)
