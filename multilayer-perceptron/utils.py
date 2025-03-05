@@ -136,7 +136,7 @@ def draw_accu(network):
     plt.ylabel("Accuracy")
     plt.title("Training and Validation accuracy")
     plt.legend()
-    plt.text(0.05, 0.05, network.params, transform=plt.gca().transAxes, fontsize=10, verticalalignment='bottom')
+    plt.text(0.7, 0.2, network.params, transform=plt.gca().transAxes, fontsize=10, verticalalignment='bottom')
     plt.savefig(f"visuals/model_{network.id}_accuracy.png")
 
 

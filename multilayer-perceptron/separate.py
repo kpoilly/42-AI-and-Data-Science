@@ -7,7 +7,8 @@ from sklearn.model_selection import train_test_split
 
 def main():
     parser = argparse.ArgumentParser(description="Dataset separation")
-    parser.add_argument('--train_size', type=int, default=80, choices=range(0, 100), help="Percentage reserved to training")
+    parser.add_argument('--train_size', type=int, default=80, choices=range(0, 100),
+                        help="Percentage reserved to training")
     args = parser.parse_args()
     test_size = (100 - int(args.train_size)) / 100
 

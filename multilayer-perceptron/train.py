@@ -61,7 +61,7 @@ Model training using mini-batchs
 
         # Early-stopping
         if epochs_without_impr >= patience:
-            print(f"Early stopping after {epoch + 1} epochs. ({time.time() - begin}s.)")
+            print(f"Early stopping after {epoch + 1} epochs.")
             break
 
         network.val_losses.append(val_loss)
@@ -93,12 +93,18 @@ def main():
         print("data/data_validation.csv successfully loaded.\n")
 
     parser = argparse.ArgumentParser(description="Training parameters")
-    parser.add_argument('--layers', type=int, default=2, choices=range(0, 128), help="Number of layers between input and output layer")
-    parser.add_argument('--layersW', type=int, default=16, choices=range(2, 256), help="Number of neurons per layers")
-    parser.add_argument('--epochs', type=int, default=1000, choices=range(0, 100001), help="Number of epochs")
-    parser.add_argument('--lr', type=float, default=0.001, help="Learning rate")
-    parser.add_argument('--batch_size', type=int, default=32, choices=range(0, len(X) + 1), help="Batch size")
-    parser.add_argument('--patience', type=int, default=10, choices=range(0, 201), help="Number of epochs without improvement tolerated (early stopping)")
+    parser.add_argument('--layers', type=int, default=2, choices=range(0, 128),
+                        help="Number of layers between input and output layer")
+    parser.add_argument('--layersW', type=int, default=16, choices=range(2, 256),
+                        help="Number of neurons per layers")
+    parser.add_argument('--epochs', type=int, default=10000, choices=range(0, 100001),
+                        help="Number of epochs")
+    parser.add_argument('--lr', type=float, default=0.001,
+                        help="Learning rate")
+    parser.add_argument('--batch_size', type=int, default=32, choices=range(0, len(X) + 1),
+                        help="Batch size")
+    parser.add_argument('--patience', type=int, default=10, choices=range(0, 201),
+                        help="Number of epochs without improvement tolerated (early stopping)")
     args = parser.parse_args()
 
     network = Network()

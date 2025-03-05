@@ -1,4 +1,3 @@
-import sys
 from typing import Type
 import numpy as np
 
@@ -40,7 +39,8 @@ class DenseLayer:
     """
  class representing a layer of the multilayer perceptron.
     """
-    def __init__(self, n_inputs: int, n_neurons: int, activation: Type[ActivationFunction]):
+    def __init__(self, n_inputs: int, n_neurons: int,
+                 activation: Type[ActivationFunction]):
         self.weights = 0.10 * np.random.randn(n_inputs, n_neurons)
         self.biases = np.zeros((1, n_neurons))
         self.activation = activation
@@ -100,4 +100,4 @@ class representing the CrossEntropy loss calculation function.
             one_hot = np.zeros((len(y_true), y_pred.shape[1]))
             one_hot[range(len(y_true)), y_true] = 1
             y_true = one_hot
-        return (y_pred_clipped -  y_true) / len(y_pred)
+        return (y_pred_clipped - y_true) / len(y_pred)

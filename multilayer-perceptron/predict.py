@@ -1,7 +1,6 @@
 import sys
 import argparse
-import numpy as np
-from utils import load_data, load_network, load_networks, normalize_data_spec, get_accuracy, one_hot, draw_comparison
+from utils import load_data, load_network, load_networks, normalize_data_spec, get_accuracy, draw_comparison
 
 
 def validate(X, network):
