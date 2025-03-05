@@ -28,8 +28,7 @@ def main():
     print(f"{args.train_size}% of the dataset has been saved at data/data_train.csv.")
     np.savetxt("data/data_validation.csv", X_validation, delimiter=',', fmt='%s')
     print(f"{100 - args.train_size}% of the dataset has been saved at data/data_validate.csv.")
-    
-        
+
 
 if __name__ == "__main__":
     main()

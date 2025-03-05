@@ -3,6 +3,7 @@ import argparse
 import numpy as np
 from utils import load_data, load_network, load_networks, normalize_data_spec, get_accuracy, one_hot, draw_comparison
 
+
 def validate(X, network):
     validate_X = normalize_data_spec(X[:, 1:].astype(float), network.mean, network.std_dev)
     validate_y = X[:, 0].astype(float)
@@ -41,6 +42,7 @@ def main():
             return 1
         else:
             validate(X, network)
+
 
 if __name__ == "__main__":
     main()

@@ -19,6 +19,7 @@ def load_data(path):
         return None
     except IsADirectoryError:
         return None
+
     
 def normalize_data(data):
     """
@@ -29,6 +30,7 @@ def normalize_data(data):
     norm_data = (data - mean) / std_dev
     return norm_data, mean, std_dev
 
+
 def normalize_data_spec(data, mean, std_dev):
     """
     Normalize the dataset
@@ -36,10 +38,12 @@ def normalize_data_spec(data, mean, std_dev):
     norm_data = (data - mean) / std_dev
     return norm_data
 
+
 def one_hot(y_true, n_outputs):
     one_hot = np.zeros((len(y_true), n_outputs))
     one_hot[np.arange(len(y_true)), y_true] = 1
     return one_hot
+
 
 def save_network(network):
     files = os.listdir("models")
@@ -49,6 +53,7 @@ def save_network(network):
     with open(f"models/model#{network.id}.pkl", "wb") as f:
         pickle.dump(network, f)
     print(f"Network successfully saved in models/model#{network.id}.pkl.")
+
     
 def load_network():
     nb_model = None
@@ -66,6 +71,7 @@ def load_network():
             nb_model = None
     
     return network
+
 
 def load_networks():
     networks = []
@@ -96,6 +102,7 @@ def get_accuracy(predictions, y_true):
     accuracy = correct_predictions / len(y_true)
     return accuracy
 
+
 def get_val_loss(network, val_X, val_y, loss_function):
     oh_val_y = one_hot(val_y, 2)
     
@@ -108,6 +115,7 @@ def get_val_loss(network, val_X, val_y, loss_function):
     val_loss = loss_function.calculate(inputs, oh_val_y)
     return np.mean(val_loss), get_accuracy(inputs, val_y)
 
+
 def draw_loss(network):
     plt.clf()
     plt.plot(network.train_losses, label="Training loss")
@@ -118,6 +126,7 @@ def draw_loss(network):
     plt.legend()
     plt.text(0.05, 0.05, network.params, transform=plt.gca().transAxes, fontsize=10, verticalalignment='bottom')
     plt.savefig(f"visuals/model_{network.id}_loss.png")
+
     
 def draw_accu(network):
     plt.clf()
@@ -129,6 +138,7 @@ def draw_accu(network):
     plt.legend()
     plt.text(0.05, 0.05, network.params, transform=plt.gca().transAxes, fontsize=10, verticalalignment='bottom')
     plt.savefig(f"visuals/model_{network.id}_accuracy.png")
+
     
 def draw_comparison(networks, val_y):
     plt.clf()
@@ -140,5 +150,4 @@ def draw_comparison(networks, val_y):
     plt.title("Model's accuracy comparison")
     plt.legend()
     plt.savefig("visuals/accuracy_comparison.png")
-    
     

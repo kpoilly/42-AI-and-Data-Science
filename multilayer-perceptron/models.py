@@ -19,11 +19,13 @@ Class representing the Artificial Neural Network
         self.val_accu = []
         self.accuracy = 0
 
+
 class ActivationFunction:
     """
 Template class for activation functions
     """
     pass
+
 
 class LossFunction:
     """
@@ -78,6 +80,7 @@ class representing the Softmax acivation function.
         
     def backward(self, grad):
         return grad
+
 
 class CrossEntropy(LossFunction):
     """
