@@ -145,7 +145,7 @@ def draw_accu(network):
     plt.savefig(f"visuals/model_{network.id}_accuracy.png")
 
 
-def draw_comparison(networks):
+def draw_comp_accuracy(networks):
     plt.clf()
     plt.figure(figsize=(10, 6))
 
@@ -155,6 +155,21 @@ def draw_comparison(networks):
 
     plt.xlabel("Training Porgress (%)")
     plt.ylabel("Accuracy")
-    plt.title("Model's accuracy comparison")
+    plt.title("Models' accuracy comparison")
     plt.legend()
     plt.savefig("visuals/accuracy_comparison.png")
+
+
+def draw_comp_loss(networks):
+    plt.clf()
+    plt.figure(figsize=(10, 6))
+
+    for network in networks:
+        x_value = [(epoch / (len(network.val_losses) - 1)) * 100 for epoch in range(len(network.val_losses))]
+        plt.plot(x_value, network.val_losses, label=f"#{network.id} Validation loss")
+
+    plt.xlabel("Training Porgress (%)")
+    plt.ylabel("Loss")
+    plt.title("Models' loss comparison")
+    plt.legend()
+    plt.savefig("visuals/loss_comparison.png")

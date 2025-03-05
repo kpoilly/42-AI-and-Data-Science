@@ -1,6 +1,6 @@
 import sys
 import argparse
-from utils import load_data, load_network, load_networks, normalize_data_spec, get_accuracy, draw_comparison, binary_cross_entropy
+from utils import load_data, load_network, load_networks, normalize_data_spec, get_accuracy, draw_comp_accuracy, draw_comp_loss, binary_cross_entropy
 
 
 def validate(X, network):
@@ -15,7 +15,7 @@ def validate(X, network):
 
     network.accuracy = get_accuracy(inputs, validate_y)
     bce = binary_cross_entropy(inputs, validate_y)
-    print(f"Accuracy for Model #{network.id}: {round(network.accuracy, 4) * 100}%\nBinaryCrossEntropy: {round(bce, 5)}.")
+    print(f"Accuracy for Model #{network.id}: {round(network.accuracy, 4) * 100}% BinaryCrossEntropy: {round(bce, 5)}.")
 
 
 def main():
@@ -35,7 +35,8 @@ def main():
         print()
         for network in networks:
             validate(X, network)
-        draw_comparison(networks)
+        draw_comp_accuracy(networks)
+        draw_comp_loss(networks)
     else:
         network = load_network()
         if not network:
