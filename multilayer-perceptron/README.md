@@ -14,7 +14,7 @@
         
    Args: 
    
-         `--train_size`, size of the training set.
+         `--train_size`, size of the training set (% of the dataset).
 
 ### - train.py :
    Trains the model on the previously separated data, using the training set for training, and the validation set for validation / early-stopping.
@@ -31,7 +31,7 @@
          `--optimize`, Enable Adam optimizer
         
    Example: 
-    ```bash
+    ```
         python train.py --epochs 30000 --batch_size 455 --patience 8 --lr 0.00125 
     ```
 
