@@ -28,6 +28,7 @@
          `--batch_size`, Batch size
          `--patience`, Number of epochs without improvement tolerated (early stopping)
          `--clear`, Delete every models saved and their data visuals
+         `--optimize`, Enable Adam optimizer
         
    Example: 
     ```bash
