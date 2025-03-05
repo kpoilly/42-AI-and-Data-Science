@@ -1,3 +1,4 @@
+import shutil
 import sys
 import time
 import argparse
@@ -82,15 +83,15 @@ def main():
         print("Error: Cannot found data/data_train.csv\nDid you separate the data file first?", file=sys.stderr)
         return 1
     else:
-        print("data/data_train.csv successfully loaded.\n")
+        print("data/data_train.csv successfully loaded.")
 
     val_X = load_data("data/data_validation.csv")
     if val_X is None:
         print("Error: Cannot found data/data_validation.csv\nDid you separate the data file first?", file=sys.stderr)
         return 1
     else:
-        print("data/data_validation.csv successfully loaded.\n")
-
+        print("data/data_validation.csv successfully loaded.")
+    
     parser = argparse.ArgumentParser(description="Training parameters")
     parser.add_argument('--layers', type=int, default=2, choices=range(0, 128),
                         help="Number of layers between input and output layer")
@@ -104,7 +105,22 @@ def main():
                         help="Batch size")
     parser.add_argument('--patience', type=int, default=10, choices=range(0, 201),
                         help="Number of epochs without improvement tolerated (early stopping)")
+    parser.add_argument('--clear', action="store_true",
+                        help="Delete every models and their data visuals")
     args = parser.parse_args()
+
+    if args.clear:
+        try:
+            shutil.rmtree("models")
+            print("folder models has been deleted.")
+        except FileNotFoundError:
+            pass
+        try:
+            shutil.rmtree("visuals")
+            print("folder visuals has been deleted.")
+        except FileNotFoundError:
+            pass
+        return 0
 
     network = Network()
     network.params = f"{args.layers} hidden layers of {args.layersW} neurons\nLearning Rate: {args.lr}\nBatch_Size: {args.batch_size}\nEpochs: {args.epochs}\nPatience: {args.patience}"
@@ -113,7 +129,7 @@ def main():
         network.network.append(DenseLayer(n_inputs=args.layersW, n_neurons=args.layersW, activation=ReLU()))
     network.network.append(DenseLayer(n_inputs=args.layersW, n_neurons=2, activation=Softmax())) # output layer
 
-    print("Network created with following configuration:")
+    print("\nNetwork created with following configuration:")
     print(f"Input layer of {args.layersW} neurons, activation function: ReLU")
     print(f"{args.layers} layers of {args.layersW} neurons, activation function: ReLU")
     print("Output layer of 2 neurons, activation function: SoftMax")
