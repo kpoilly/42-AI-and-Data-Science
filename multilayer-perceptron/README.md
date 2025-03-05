@@ -11,29 +11,25 @@ Learn core concepts like backpropagation and gradient descent, evaluate model pe
 ## Programs:
 **- separate.py :**
     Separates the given data in 2 part, training set and validation set.
-
-    Args: `--train_size`, size of the training set.
+        Args: `--train_size`, size of the training set.
 
 **- train.py :**
     Trains the model on the previously separated data, using the training set for training, and the validation set for validation / early-stopping.
-
-    Args: `--layers`, Number of hidden layers between input and output layer
-            `--layersW`, Number of neurons per layer
-            `--epochs`, Number of epochs
-            `--lr`, Learning rate
-            `--batch_size`, Batch size
-            `--patience`, Number of epochs without improvement tolerated (early stopping)
-            `--clear`, Delete every models saved and their data visuals
-    
-    Example: 
-    ```bash
-        python train.py --epochs 30000 --batch_size 455 --patience 8 --lr 0.00125 
-    ```
+        Args: `--layers`, Number of hidden layers between input and output layer
+              `--layersW`, Number of neurons per layer
+              `--epochs`, Number of epochs
+              `--lr`, Learning rate
+              `--batch_size`, Batch size
+              `--patience`, Number of epochs without improvement tolerated (early stopping)
+              `--clear`, Delete every models saved and their data visuals
+        Example: 
+            ```bash
+                python train.py --epochs 30000 --batch_size 455 --patience 8 --lr 0.00125 
+            ```
 
 **- predict.py :**
 Calculates the accuracy and the Binary Entropy Loss of a given model number, or compares every models saved in a graph.
-
-Args: `--compare`, activate the comparison mode, comparing every models saved in models/ and show their accuracy and loss in a single graph.
+    Args: `--compare`, activate the comparison mode, comparing every models saved in models/ and show their accuracy and loss in a single graph.
     
 
 ## Packages needed:
