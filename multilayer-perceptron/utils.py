@@ -86,6 +86,11 @@ def load_networks():
     return networks
 
 
+def binary_cross_entropy(predictions, y_true):
+    predictions = np.clip(predictions, 1e-15, 1 - 1e-15)
+    return -np.mean(y_true * np.log(predictions[:, 1]) + (1 - y_true) * np.log(predictions[:, 0]))
+
+
 def get_accuracy(predictions, y_true):
     """
     Calculate the accuracy of the model.
@@ -140,12 +145,15 @@ def draw_accu(network):
     plt.savefig(f"visuals/model_{network.id}_accuracy.png")
 
 
-def draw_comparison(networks, val_y):
+def draw_comparison(networks):
     plt.clf()
-    plt.plot(val_y, label="True values")
+    plt.figure(figsize=(10, 6))
+
     for network in networks:
-        plt.plot(network.val_accu, label=f"#{network.id} Validation accuracy")
-    plt.xlabel("Epochs")
+        x_value = [(epoch / (len(network.val_accu) - 1)) * 100 for epoch in range(len(network.val_accu))]
+        plt.plot(x_value, network.val_accu, label=f"#{network.id} Validation accuracy")
+
+    plt.xlabel("Training Porgress (%)")
     plt.ylabel("Accuracy")
     plt.title("Model's accuracy comparison")
     plt.legend()

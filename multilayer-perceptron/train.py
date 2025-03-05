@@ -42,7 +42,6 @@ Model training using mini-batchs
             layer.activation.forward(layer.output)
             inputs = layer.activation.output
 
-
         # Backpropagation
         loss = loss_function.calculate(inputs, oh_batch_y)
         grad = loss_function.backward(inputs, oh_batch_y)

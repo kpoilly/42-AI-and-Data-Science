@@ -1,6 +1,6 @@
 import sys
 import argparse
-from utils import load_data, load_network, load_networks, normalize_data_spec, get_accuracy, draw_comparison
+from utils import load_data, load_network, load_networks, normalize_data_spec, get_accuracy, draw_comparison, binary_cross_entropy
 
 
 def validate(X, network):
@@ -14,7 +14,8 @@ def validate(X, network):
         inputs = layer.activation.output
 
     network.accuracy = get_accuracy(inputs, validate_y)
-    print(f"Accuracy for Model #{network.id}: {round(network.accuracy, 4) * 100}%.")
+    bce = binary_cross_entropy(inputs, validate_y)
+    print(f"Accuracy for Model #{network.id}: {round(network.accuracy, 4) * 100}%\nBinaryCrossEntropy: {round(bce, 5)}.")
 
 
 def main():
@@ -34,13 +35,12 @@ def main():
         print()
         for network in networks:
             validate(X, network)
-        draw_comparison(networks, X[:, 0].astype(float).astype(int))
+        draw_comparison(networks)
     else:
         network = load_network()
         if not network:
             return 1
-        else:
-            validate(X, network)
+        validate(X, network)
 
 
 if __name__ == "__main__":
