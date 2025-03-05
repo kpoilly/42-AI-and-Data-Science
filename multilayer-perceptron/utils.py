@@ -117,7 +117,7 @@ def draw_loss(network):
     plt.title("Training and Validation loss")
     plt.legend()
     plt.text(0.05, 0.05, network.params, transform=plt.gca().transAxes, fontsize=10, verticalalignment='bottom')
-    plt.savefig(f"visuals/model#{network.id}_loss.png")
+    plt.savefig(f"visuals/model_{network.id}_loss.png")
     
 def draw_accu(network):
     plt.clf()
@@ -128,5 +128,17 @@ def draw_accu(network):
     plt.title("Training and Validation accuracy")
     plt.legend()
     plt.text(0.05, 0.05, network.params, transform=plt.gca().transAxes, fontsize=10, verticalalignment='bottom')
-    plt.savefig(f"visuals/model#{network.id}_accuracy.png")
+    plt.savefig(f"visuals/model_{network.id}_accuracy.png")
+    
+def draw_comparison(networks, val_y):
+    plt.clf()
+    plt.plot(val_y, label="True values")
+    for network in networks:
+        plt.plot(network.val_accu, label=f"#{network.id} Validation accuracy")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    plt.title("Model's accuracy comparison")
+    plt.legend()
+    plt.savefig("visuals/accuracy_comparison.png")
+    
     

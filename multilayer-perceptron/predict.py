@@ -34,7 +34,7 @@ def main():
         print()
         for network in networks:
             validate(X, network)
-        draw_comparison(networks)
+        draw_comparison(networks, X[:, 0].astype(float).astype(int))
     else:
         network = load_network()
         if not network:
