@@ -45,6 +45,12 @@ class DenseLayer:
         self.biases = np.zeros((1, n_neurons))
         self.activation = activation
 
+        # Adam optimizer parameters
+        self.m_dw = np.zeros_like(self.weights)
+        self.m_db = np.zeros_like(self.biases)
+        self.v_dw = np.zeros_like(self.weights)
+        self.v_db = np.zeros_like(self.biases)
+
     def forward(self, inputs):
         self.inputs = inputs
         self.output = np.dot(inputs, self.weights) + self.biases
@@ -55,6 +61,26 @@ class DenseLayer:
         self.weights -= lr * weights_grad
         self.biases -= lr * np.mean(grad, axis=0, keepdims=True)
         return np.dot(grad, self.weights.T)
+
+    def adam_backward(self, grad, lr, beta1=0.9, beta2=0.999, epsilon=1e-8, epoch=0):
+        grad = self.activation.backward(grad)
+        weights_grad = np.dot(self.inputs.T, grad)
+        biases_grad = np.mean(grad, axis=0, keepdims=True)
+
+        self.m_dw = beta1 * self.m_dw + (1 - beta1) * weights_grad
+        self.m_db = beta1 * self.m_db + (1 - beta1) * biases_grad
+        self.v_dw = beta2 * self.v_dw + (1 - beta2) * weights_grad ** 2
+        self.v_db = beta2 * self.v_db + (1 - beta2) * biases_grad ** 2
+
+        m_dw_corrected = self.m_dw / (1 - beta1 ** (epoch + 1))
+        m_db_corrected = self.m_db / (1 - beta1 ** (epoch + 1))
+        v_dw_corrected = self.v_dw / (1 - beta2 ** (epoch + 1))
+        v_db_corrected = self.v_db / (1 - beta2 ** (epoch + 1))
+
+        self.weights -= lr * m_dw_corrected / (np.sqrt(v_dw_corrected) + epsilon)
+        self.biases -= lr * m_db_corrected / (np.sqrt(v_db_corrected) + epsilon)
+        return np.dot(grad, self.weights.T)
+
 
 
 class ReLU(ActivationFunction):

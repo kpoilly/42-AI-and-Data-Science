@@ -7,7 +7,7 @@ from utils import load_data, normalize_data, normalize_data_spec, one_hot, save_
 from models import Network, DenseLayer, ReLU, Softmax, CrossEntropy
 
 
-def train(network, lr, batch_size, epochs, X, val_X, patience):
+def train(network, lr, batch_size, epochs, X, val_X, patience, optimize):
     """
 Model training using mini-batchs
     """
@@ -17,6 +17,8 @@ Model training using mini-batchs
     print(f"batches of size: {batch_size}")
     print(f"number of epochs: {epochs}")
     print("loss function: CrossEntropy")
+    if optimize:
+        print("Adam optimizer enabled")
     print("")
     time.sleep(1)
 
@@ -48,7 +50,10 @@ Model training using mini-batchs
         grad = loss_function.backward(inputs, oh_batch_y)
 
         for layer in reversed(network.network):
-            grad = layer.backward(grad, lr)
+            if optimize:
+                grad = layer.adam_backward(grad, lr, epoch=epoch)
+            else:
+                grad = layer.backward(grad, lr)
 
         # Validation
         val_loss, val_accu = get_val_loss(network.network, val_X, val_y, loss_function)
@@ -91,7 +96,7 @@ def main():
         return 1
     else:
         print("data/data_validation.csv successfully loaded.")
-    
+
     parser = argparse.ArgumentParser(description="Training parameters")
     parser.add_argument('--layers', type=int, default=2, choices=range(0, 128),
                         help="Number of layers between input and output layer")
@@ -107,6 +112,8 @@ def main():
                         help="Number of epochs without improvement tolerated (early stopping)")
     parser.add_argument('--clear', action="store_true",
                         help="Delete every models and their data visuals")
+    parser.add_argument('--optimize', action="store_true",
+                        help="Enable Adam optimizer backpropagation")
     args = parser.parse_args()
 
     if args.clear:
@@ -124,6 +131,8 @@ def main():
 
     network = Network()
     network.params = f"{args.layers} hidden layers of {args.layersW} neurons\nLearning Rate: {args.lr}\nBatch_Size: {args.batch_size}\nEpochs: {args.epochs}\nPatience: {args.patience}"
+    if args.optimize:
+        network.params += "\nAdam optimizer enabled"
     network.network = [DenseLayer(n_inputs=len(X[0])-1, n_neurons=args.layersW, activation=ReLU())] # input layer
     for i in range(0, args.layers):
         network.network.append(DenseLayer(n_inputs=args.layersW, n_neurons=args.layersW, activation=ReLU()))
@@ -136,7 +145,7 @@ def main():
     print("")
     time.sleep(1)
 
-    train(network, args.lr, args.batch_size, args.epochs, X, val_X, args.patience)
+    train(network, args.lr, args.batch_size, args.epochs, X, val_X, args.patience, args.optimize)
 
 
 if __name__ == "__main__":
