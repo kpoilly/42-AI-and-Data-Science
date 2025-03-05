@@ -3,12 +3,12 @@
 **Final note: Not evaluated yet.**
 
 
-### Description:
+**Description:**
     This project focuses on implementing a Multilayer Perceptron (MLP) from scratch for binary classification of breast cancer diagnosis.
     Learn core concepts like backpropagation and gradient descent, evaluate model performance using binary cross-entropy, and explore advanced optimization techniques.
 
 
-### Programs:
+**Programs:**
     **- separate.py :**
         Separates the given data in 2 part, training set and validation set.
 
@@ -36,7 +36,7 @@
         Args: --compare, activate the comparison mode, comparing every models saved in models/ and show their accuracy and loss in a single graph.
     
 
-### Packages needed:
+**Packages needed:**
     numpy
     matplotlib
     sickit-learn
