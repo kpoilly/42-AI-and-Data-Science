@@ -44,11 +44,11 @@ class DenseLayer:
         self.weights = 0.10 * np.random.randn(n_inputs, n_neurons)
         self.biases = np.zeros((1, n_neurons))
         self.activation = activation
-    
+
     def forward(self, inputs):
         self.inputs = inputs
         self.output = np.dot(inputs, self.weights) + self.biases
-        
+
     def backward(self, grad, lr):
         grad = self.activation.backward(grad)
         weights_grad = np.dot(self.inputs.T, grad)
@@ -64,11 +64,11 @@ class ReLU(ActivationFunction):
     def forward(self, inputs):
         self.inputs = inputs
         self.output = np.maximum(0, inputs)
-    
+
     def backward(self, grad):
         return grad * (self.inputs > 0)
 
-        
+
 class Softmax(ActivationFunction):
     """
 class representing the Softmax acivation function.
@@ -77,7 +77,7 @@ class representing the Softmax acivation function.
         exp_val = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
         prob = exp_val / np.sum(exp_val, axis=1, keepdims=True)
         self.output = prob
-        
+
     def backward(self, grad):
         return grad
 
@@ -93,7 +93,7 @@ class representing the CrossEntropy loss calculation function.
         elif len(y_true.shape) == 2:
             confidences = np.sum(y_pred_clipped * y_true, axis=1)
         return -np.log(confidences)
-    
+
     def backward(self, y_pred, y_true):
         y_pred_clipped = np.clip(y_pred, 1e-7, 1 - 1e-7)
         if len(y_true.shape) == 1:
