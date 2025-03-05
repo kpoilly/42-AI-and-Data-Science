@@ -48,6 +48,8 @@
     matplotlib
     sickit-learn
 
+![image](https://github.com/user-attachments/assets/3d4220ef-4c1f-4225-9474-f52b77bf3d06)
+
 
 ![image](https://github.com/user-attachments/assets/a413d016-557f-4962-914e-76308567e116)
 
