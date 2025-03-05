@@ -2,7 +2,7 @@ import sys
 import time
 import argparse
 import numpy as np
-from utils import load_data, normalize_data, normalize_data_spec, one_hot, save_network, get_val_loss, draw_loss, get_accuracy
+from utils import load_data, normalize_data, normalize_data_spec, one_hot, save_network, get_val_loss, draw_loss, draw_accu, get_accuracy
 from models import Network, DenseLayer, ReLU, Softmax, CrossEntropy
 
 
@@ -33,7 +33,7 @@ Model training using mini-batchs
 
         batch_X = norm_X[batch_indexes]
         batch_y = X[batch_indexes][:, 0].astype(float).astype(int)
-        batch_y = one_hot(batch_y, 2)
+        oh_batch_y = one_hot(batch_y, 2)
 
         #Forwardpropagation
         inputs = batch_X
@@ -42,15 +42,16 @@ Model training using mini-batchs
             layer.activation.forward(layer.output)
             inputs = layer.activation.output
             
+            
         #Backpropagation
-        loss = loss_function.calculate(inputs, batch_y)
-        grad = loss_function.backward(inputs, batch_y)
+        loss = loss_function.calculate(inputs, oh_batch_y)
+        grad = loss_function.backward(inputs, oh_batch_y)
         
         for layer in reversed(network.network):
             grad = layer.backward(grad, lr)
             
         #Validation
-        val_loss = get_val_loss(network.network, val_X, val_y, loss_function)
+        val_loss, val_accu = get_val_loss(network.network, val_X, val_y, loss_function)
         
         if round(val_loss, 5) < best_val_loss:
             best_val_loss = round(val_loss, 5)
@@ -63,13 +64,17 @@ Model training using mini-batchs
             print(f"Early stopping after {epoch + 1} epochs. ({time.time() - begin}s.)")
             break
         
-        network.train_losses.append(loss)
         network.val_losses.append(val_loss)
+        network.val_accu.append(val_accu)
+        network.train_accu.append(get_accuracy(inputs, batch_y))
+        network.train_losses.append(loss)
+        
         print(f"epoch {epoch + 1}/{epochs} - loss: {loss} - val_loss: {val_loss}")
        
     print(f"\nTraining ended in {time.time() - begin}s.")
     save_network(network)
     draw_loss(network)
+    draw_accu(network)
             
 
 def main():
@@ -92,12 +97,10 @@ def main():
     parser.add_argument('--layersW', type=int, default=16, choices=range(2, 256), help="Number of neurons per layers")
     parser.add_argument('--epochs', type=int, default=1000, choices=range(0, 100001), help="Number of epochs")
     parser.add_argument('--lr', type=float, default=0.001, help="Learning rate")
-    parser.add_argument('--batch_size', type=int, default=32, choices={12, 24, 32, 64, 128, 256}, help="Batch size")
+    parser.add_argument('--batch_size', type=int, default=32, choices=range(0, len(X) + 1), help="Batch size")
     parser.add_argument('--patience', type=int, default=10, choices=range(0, 201), help="Number of epochs without improvement tolerated (early stopping)")
     args = parser.parse_args()
     
-    
-
     network = Network()
     network.params = f"{args.layers} hidden layers of {args.layersW} neurons\nLearning Rate: {args.lr}\nBatch_Size: {args.batch_size}\nEpochs: {args.epochs}\nPatience: {args.patience}"
     network.network = [DenseLayer(n_inputs=len(X[0])-1, n_neurons=args.layersW, activation=ReLU())] # input layer

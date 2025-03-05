@@ -97,7 +97,7 @@ def get_accuracy(predictions, y_true):
     return accuracy
 
 def get_val_loss(network, val_X, val_y, loss_function):
-    val_y = one_hot(val_y, 2)
+    oh_val_y = one_hot(val_y, 2)
     
     inputs = val_X
     for layer in network:
@@ -105,10 +105,11 @@ def get_val_loss(network, val_X, val_y, loss_function):
         layer.activation.forward(layer.output)
         inputs = layer.activation.output
     
-    val_loss = loss_function.calculate(inputs, val_y)
-    return np.mean(val_loss)
+    val_loss = loss_function.calculate(inputs, oh_val_y)
+    return np.mean(val_loss), get_accuracy(inputs, val_y)
 
 def draw_loss(network):
+    plt.clf()
     plt.plot(network.train_losses, label="Training loss")
     plt.plot(network.val_losses, label="Validation loss")
     plt.xlabel("Epochs")
@@ -117,3 +118,15 @@ def draw_loss(network):
     plt.legend()
     plt.text(0.05, 0.05, network.params, transform=plt.gca().transAxes, fontsize=10, verticalalignment='bottom')
     plt.savefig(f"visuals/model#{network.id}_loss.png")
+    
+def draw_accu(network):
+    plt.clf()
+    plt.plot(network.train_accu, label="Training accuracy")
+    plt.plot(network.val_accu, label="Validation accuracy")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    plt.title("Training and Validation accuracy")
+    plt.legend()
+    plt.text(0.05, 0.05, network.params, transform=plt.gca().transAxes, fontsize=10, verticalalignment='bottom')
+    plt.savefig(f"visuals/model#{network.id}_accuracy.png")
+    
