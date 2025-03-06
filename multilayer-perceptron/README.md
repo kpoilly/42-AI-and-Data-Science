@@ -7,6 +7,7 @@
    This project focuses on implementing a Multilayer Perceptron (MLP) from scratch for binary classification of breast cancer diagnosis.
    Learning core concepts like backpropagation and gradient descent, evaluating model performance using binary cross-entropy, and exploring advanced optimization techniques like Adam optimizer and more.
 
+   More informations about dataset [here](https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.names).
 
 ## Programs:
 ### - separate.py :
@@ -41,7 +42,11 @@
    Args:
    
          `--compare`, activate the comparison mode, comparing every models saved in models/ and show their accuracy and loss in a single graph.
-    
+
+### - test.py:
+   Takes 1 line of data as a command-line argument and uses a previously trained model to give the percentage chance of each of the two possible diagnoses.
+
+   Argv: 1 line of the 30 data, just like in the dataset (without the 2 first elements).
 
 ## Packages needed:
     numpy
@@ -56,4 +61,6 @@
 
 ![image](https://github.com/user-attachments/assets/7cdd47b4-9baf-43f9-98ac-4dbcb0c5d145)
 
+
+   ![image](https://github.com/user-attachments/assets/c3d2c71a-02e6-44d7-9167-34285bc4d5bb)
 
