@@ -3,9 +3,17 @@ import sys
 import time
 import argparse
 import numpy as np
-from utils import load_data, normalize_data, normalize_data_spec, one_hot, save_network, get_val_loss, draw_loss_accu, get_accuracy
-from models import Network, DenseLayer, ReLU, Softmax, CrossEntropy
 
+import torch
+import torch.nn as nn
+from torch.optim import Adam, SGD
+
+from sklearn.preprocessing import StandardScaler
+from models import Network
+from utils import load_data, draw_loss_accu, save_network
+
+
+device = 'cuda' if torch.cuda.is_available() else ' cpu'
 
 def train(network, lr, batch_size, epochs, X, val_X, patience, optimize):
     """
@@ -23,56 +31,60 @@ Model training using mini-batchs
     time.sleep(1)
 
     begin = time.time()
-    loss_function = CrossEntropy()
-    norm_X, network.mean, network.std_dev = normalize_data(X[:, 1:].astype(float))
-
-    val_y = val_X[:, 0].astype(float).astype(int)
-    val_X = normalize_data_spec(val_X[:, 1:].astype(float), network.mean, network.std_dev)
+    criterion = nn.CrossEntropyLoss().to(device)
+    optimizer = Adam(network.parameters(), lr=lr) if optimize else SGD(network.parameters(), lr=lr)
+    
+    scaler = StandardScaler()
+    norm_X = scaler.fit_transform(X[:, 1:].astype(float))
+    norm_val_X = scaler.transform(val_X[:, 1:].astype(float))
+    val_y = val_X[:, 0].astype(float)
+    
     best_val_loss = float('inf')
     epochs_without_impr = 0
 
     for epoch in range(epochs):
         batch_indexes = np.random.choice(len(norm_X), batch_size, replace=False)
-
         batch_X = norm_X[batch_indexes]
-        batch_y = X[batch_indexes][:, 0].astype(float).astype(int)
-        oh_batch_y = one_hot(batch_y, 2)
+        batch_y = X[batch_indexes][:, 0].astype(float)
+        
+        inputs = torch.tensor(batch_X, dtype=torch.float32).to(device)
+        targets = torch.tensor(batch_y, dtype=torch.long).to(device)
 
         # Forwardpropagation
-        inputs = batch_X
-        for layer in network.network:
-            layer.forward(inputs)
-            layer.activation.forward(layer.output)
-            inputs = layer.activation.output
+        outputs = network(inputs)
+        loss = criterion(outputs, targets)
 
         # Backpropagation
-        loss = loss_function.calculate(inputs, oh_batch_y)
-        grad = loss_function.backward(inputs, oh_batch_y)
-
-        for layer in reversed(network.network):
-            if optimize:
-                grad = layer.adam_backward(grad, lr, epoch=epoch)
-            else:
-                grad = layer.backward(grad, lr)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
         # Validation
-        val_loss, val_accu = get_val_loss(network.network, val_X, val_y, loss_function)
+        with torch.no_grad():
+            val_inputs = torch.tensor(norm_val_X, dtype=torch.float32).to(device)
+            val_targets = torch.tensor(val_y, dtype=torch.long).to(device)
+            val_outputs = network(val_inputs)
+            val_loss = criterion(val_outputs, val_targets).item() 
+            val_accu = (torch.argmax(val_outputs, dim=1) == val_targets).float().mean()
 
+        # Early-stopping
         if round(val_loss, 5) < best_val_loss:
             best_val_loss = round(val_loss, 5)
             epochs_without_impr = 0
         else:
             epochs_without_impr += 1
 
-        # Early-stopping
         if epochs_without_impr >= patience:
             print(f"Early stopping after {epoch + 1} epochs.")
             break
 
         network.val_losses.append(val_loss)
-        network.val_accu.append(val_accu)
-        network.train_accu.append(get_accuracy(inputs, batch_y))
-        network.train_losses.append(loss)
+        network.val_accu.append(val_accu.item())
+        network.train_losses.append(loss.item())
+        
+        with torch.no_grad():
+            train_accu = (torch.argmax(outputs, dim=1) == targets).float().mean()
+        network.train_accu.append(train_accu.item())
 
         print(f"epoch {epoch + 1}/{epochs} - loss: {loss} - val_loss: {val_loss} - Model Accuracy: {round(network.val_accu[-1], 5) * 100}%")
 
@@ -82,19 +94,19 @@ Model training using mini-batchs
 
 
 def main():
-    X = load_data("data/data_train.csv")
+    X = load_data("../data/data_train.csv")
     if X is None:
         print("Error: Cannot found data/data_train.csv\nDid you separate the data file first?", file=sys.stderr)
         return 1
     else:
-        print("data/data_train.csv successfully loaded.")
+        print("../data/data_train.csv successfully loaded.")
 
-    val_X = load_data("data/data_validation.csv")
+    val_X = load_data("../data/data_validation.csv")
     if val_X is None:
         print("Error: Cannot found data/data_validation.csv\nDid you separate the data file first?", file=sys.stderr)
         return 1
     else:
-        print("data/data_validation.csv successfully loaded.")
+        print("../data/data_validation.csv successfully loaded.")
 
     parser = argparse.ArgumentParser(description="Training parameters")
     parser.add_argument('--layers', type=int, default=2, choices=range(0, 128),
@@ -128,15 +140,12 @@ def main():
             pass
         return 0
 
-    network = Network()
+    n_inputs = len(X[0]) - 1
+    network = Network(n_inputs, args.layers, args.layersW, 2).to(device)
     network.params = f"{args.layers} hidden layers of {args.layersW} neurons\nLearning Rate: {args.lr}\nBatch_Size: {args.batch_size}\nEpochs: {args.epochs}\nPatience: {args.patience}"
     if args.optimize:
         network.params += "\nAdam optimizer enabled"
-    network.network = [DenseLayer(n_inputs=len(X[0])-1, n_neurons=args.layersW, activation=ReLU())] # input layer
-    for i in range(0, args.layers):
-        network.network.append(DenseLayer(n_inputs=args.layersW, n_neurons=args.layersW, activation=ReLU()))
-    network.network.append(DenseLayer(n_inputs=args.layersW, n_neurons=2, activation=Softmax())) # output layer
-
+   
     print("\nNetwork created with following configuration:")
     print(f"Input layer of {args.layersW} neurons, activation function: ReLU")
     print(f"{args.layers} layers of {args.layersW} neurons, activation function: ReLU")

@@ -33,7 +33,7 @@
         
    Example: 
     ```
-        python3 train.py --epochs 5000 --batch_size 64 --patience 5 --lr 0.00125 --optimize
+        python3 train.py --epochs 500 --batch_size 32 --patience 2 --lr 0.00125 --optimize
     ```
 
 ### - predict.py :
@@ -63,4 +63,7 @@
 
 
    ![image](https://github.com/user-attachments/assets/c3d2c71a-02e6-44d7-9167-34285bc4d5bb)
+
+
+
 
