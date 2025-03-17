@@ -8,6 +8,17 @@ matplotlib.use('gtk3agg')
 
 
 def ft_transpose(img):
+    """
+    Transpose an image 
+    (we could use np.transpose but we're not allowed)
+
+    Args:
+        img: np.array of the image's features.
+
+    Returns:
+        Numpy array of the transposed image.
+    """
+
     height, width = img.shape
     img_transposed = np.zeros((height, width), dtype=img.dtype)
     for i in range(height):
