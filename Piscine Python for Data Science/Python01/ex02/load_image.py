@@ -18,8 +18,9 @@ def ft_load(path: str) -> np.array:
     if ".jpg" not in path.lower() and ".jpeg" not in path.lower():
         raise ValueError("Image should only be in .jpg or .jpeg format")
 
-    img = imread(path)
-    if img is None:
+    try:
+        img = imread(path)
+    except FileNotFoundError:
         raise AssertionError("Image could not be loaded. (is path correct ?)")
 
     img_array = np.array(img)
