@@ -16,7 +16,7 @@ def main():
     for c in text:
         if c.isupper():
             count += 1
-        print(count, "upper letters")
+    print(count, "upper letters")
 
     count = 0
     for c in text:

@@ -5,7 +5,7 @@ from ft_filter import ft_filter
 def main():
     try:
         if len(sys.argv) != 3:
-            raise AssertionError("Too many arguments.")
+            raise AssertionError("Bad arguments.")
         else:
             str = sys.argv[1]
             n = int(sys.argv[2])

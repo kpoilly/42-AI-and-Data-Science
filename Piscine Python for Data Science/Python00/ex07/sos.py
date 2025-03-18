@@ -4,12 +4,12 @@ import sys
 def main():
     try:
         if len(sys.argv) != 2:
-            raise AssertionError("Too many arguments.")
+            raise AssertionError("Bad arguments.")
 
         str = sys.argv[1]
         for i in str:
             if not i.isalnum():
-                raise AssertionError("Invalid argument.")
+                raise AssertionError("Invalid character: {}".format(i))
 
         NESTED_MORSE = {
             'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
@@ -31,7 +31,7 @@ def main():
             else:
                 raise AssertionError("Invalid character: {}".format(i))
 
-        print(morse_str)
+        print(morse_str[:-1])
 
     except AssertionError as e:
         print("AssertionError:", e, file=sys.stderr)
