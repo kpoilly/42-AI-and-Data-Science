@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:latest
+    container_name: postgres
     environment:
       - POSTGRES_USER=kpoilly
       - POSTGRES_PASSWORD=mysecretpassword
