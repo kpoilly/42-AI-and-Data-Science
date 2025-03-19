@@ -29,7 +29,7 @@ def correl_factors(path):
 
 
 def main():
-    print(correl_factors("Train_knight.csv"))
+    print(correl_factors("../Train_knight.csv"))
 
 
 if __name__ == "__main__":
