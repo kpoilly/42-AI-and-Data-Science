@@ -20,8 +20,8 @@ def correl_factors(path):
 
     correl_factors = {}
     for feature in features:
-        correlation, _ = pointbiserialr(df['knight_nb'], df[feature])
-        correl_factors[feature] = correlation
+        correlation, _ = pointbiserialr(df[feature], df['knight_nb'])
+        correl_factors[feature] = abs(correlation)
 
     correlations = pd.Series(correl_factors).sort_values(key=abs,
                                                          ascending=False)
