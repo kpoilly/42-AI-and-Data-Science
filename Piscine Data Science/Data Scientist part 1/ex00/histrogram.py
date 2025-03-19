@@ -5,10 +5,13 @@ from load_csv import load
 
 
 def draw_single(path):
+    """
+    Draw histogram of a file based on a single class (Knight in our case)
+    """
     try:
         df = load(path)
-    except Exception:
-        print("Error loading csv file.", file=sys.stderr)
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
         exit()
 
     nb_cols = len(df.columns)
@@ -30,10 +33,13 @@ def draw_single(path):
 
 
 def draw_double(path):
+    """
+    Draw histogram of a file based on 2 classes (Jedi and Sith in our case)
+    """
     try:
         df = load(path)
-    except Exception:
-        print("Error loading csv file.", file=sys.stderr)
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
         exit()
 
     graphs_name = [col for col in df.columns if col != 'knight']
