@@ -15,12 +15,12 @@ def main():
 
     X_train, X_validation = train_test_split(df, train_size=train_size,
                                              random_state=42)
-    X_train.to_csv(f"{sys.argv[1]}_train.csv", sep=',')
+    X_train.to_csv("Training_knight.csv", sep=',')
     print(f"{train_size * 100}% of the dataset has been saved at\
- {sys.argv[1]}_train.csv.")
-    X_validation.to_csv(f"{sys.argv[1]}_validation.csv", sep=',')
+ Training_knight.csv.")
+    X_validation.to_csv("Validation_knight.csv", sep=',')
     print(f"{100 - train_size * 100}% of the dataset has been saved at\
- {sys.argv[1]}_validate.csv.")
+ Validation_knight.csv.")
 
 
 if __name__ == "__main__":
