@@ -44,7 +44,9 @@ def main():
         print(f"Error: {str(e)}", file=sys.stderr)
         exit()
 
+    print(f"Before std:\n{df.head()}")
     df_std = standardize(df)
+    print(f"After std:\n{df_std.head()}")
     df2_std = standardize(df2.drop(columns='knight'))
     df2_std['knight'] = df2['knight']
 
