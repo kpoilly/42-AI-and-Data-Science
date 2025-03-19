@@ -7,6 +7,10 @@ from sklearn.linear_model import LinearRegression
 
 
 def variance_inflation_factor(df, index):
+    """
+    Our own variance_inflation_factor calculator
+    based on a Linear Regression model
+    """
     feature = df.columns[index]
     y = df[feature]
     X = df.drop(columns=[feature])
