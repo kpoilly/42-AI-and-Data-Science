@@ -6,7 +6,7 @@ from load_csv import load
 
 def draw_scatter(path, x, y, single=False):
     """
-    Draw scatter of a file based on a single class (Knight in our case)
+    Draw scatter of a file based on a csv file
     """
     try:
         df = load(path)
