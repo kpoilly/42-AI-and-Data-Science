@@ -14,6 +14,7 @@ def draw_single(path):
         print(f"Error: {str(e)}", file=sys.stderr)
         exit()
 
+    print("Generating Histrogram_single.jpg...")
     nb_cols = len(df.columns)
     nb_rows = (nb_cols) // 5
 
@@ -42,6 +43,7 @@ def draw_double(path):
         print(f"Error: {str(e)}", file=sys.stderr)
         exit()
 
+    print("Generating Histrogram_double.jpg...")
     graphs_name = [col for col in df.columns if col != 'knight']
     nb_cols = len(graphs_name)
     nb_rows = (nb_cols) // 5
@@ -68,8 +70,8 @@ def draw_double(path):
 
 
 def main():
-    draw_single("Test_knight.csv")
-    draw_double("Train_knight.csv")
+    draw_single("../Test_knight.csv")
+    draw_double("../Train_knight.csv")
 
 
 if __name__ == "__main__":
