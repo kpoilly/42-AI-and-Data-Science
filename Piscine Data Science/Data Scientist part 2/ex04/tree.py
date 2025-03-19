@@ -53,7 +53,7 @@ def predict(path_train, path_val):
 
 
 def main():
-    predict("data_train.csv", "data_validation.csv")
+    predict("../data_train.csv", "../data_validation.csv")
 
 
 if __name__ == "__main__":

@@ -10,6 +10,6 @@ def load(path: str) -> pd.array:
     try:
         dataset = pd.read_csv(path)
     except FileNotFoundError:
-        return None
+        raise AssertionError(f"file {path} not found.")
     print("Loading dataset of dimensions", dataset.shape)
     return dataset
