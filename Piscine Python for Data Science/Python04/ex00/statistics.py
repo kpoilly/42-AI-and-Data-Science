@@ -1,4 +1,7 @@
 def ft_mean(vec):
+    """
+Calculate the mean of a vector
+    """
     mean = 0
     for elem in vec:
         mean += elem
@@ -6,6 +9,9 @@ def ft_mean(vec):
 
 
 def ft_median(vec):
+    """
+Calculate the median of a vector
+    """
     vec.sort()
     if len(vec) % 2 != 0:
         return vec[int((len(vec) - 1) / 2)]
@@ -15,6 +21,9 @@ def ft_median(vec):
 
 
 def ft_quartile(vec):
+    """
+Calculate the q1 and q3 of a vector
+    """
     vec.sort()
     pos_q1 = len(vec) // 4
     pos_q3 = pos_q1 * 3
@@ -29,10 +38,16 @@ def ft_quartile(vec):
 
 
 def ft_std(vec):
+    """
+Calculate the standard deviation of a vector
+    """
     return ft_var(vec) ** 0.5
 
 
 def ft_var(vec):
+    """
+Calculate the variance of a vector
+    """
     mean = ft_mean(vec)
     res = sum((i - mean) ** 2 for i in vec) / len(vec)
     return res

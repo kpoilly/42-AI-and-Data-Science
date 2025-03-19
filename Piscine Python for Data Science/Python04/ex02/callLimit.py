@@ -2,6 +2,10 @@ import sys
 
 
 def callLimit(limit: int):
+    """
+    Mean to be used as a decorator
+    blocks the execution of a function above a limit
+    """
     count = 0
 
     def callLimiter(function):

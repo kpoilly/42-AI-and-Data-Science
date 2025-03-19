@@ -21,4 +21,7 @@ args:
     id: str = field(init=False, default=generate_id())
 
     def __post_init__(self):
+        """
+        Constructor of Student class
+        """
         self.login = self.name[0] + self.surname
