@@ -46,7 +46,7 @@ def calculate_VIF(path):
     return vif_data
 
 def main():
-    vifs = calculate_VIF("Train_knight.csv")
+    vifs = calculate_VIF("../Train_knight.csv")
     vifs = vifs.set_index("Feature")
     print(vifs)
     
