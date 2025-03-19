@@ -33,7 +33,7 @@ def predict(path_train, path_val):
 
     # Model training
     precision_scores = {}
-    k_values = range(1, 51)
+    k_values = range(1, 31)
 
     for k in k_values:
         model = KNeighborsClassifier(n_neighbors=k)
