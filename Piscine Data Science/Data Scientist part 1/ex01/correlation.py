@@ -5,6 +5,9 @@ from scipy.stats import pointbiserialr
 
 
 def correl_factors(path):
+    """
+    Calulates correlation factor of a given dataset
+    """
     try:
         df = load(path)
     except Exception as e:
