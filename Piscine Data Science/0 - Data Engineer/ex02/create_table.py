@@ -54,7 +54,8 @@ def csv_to_table(engine, csv_path):
                     columns_types[col] = Boolean
                 else:
                     try:
-                        pd.to_datetime(df[col], format='%Y-%m-%d %H:%M:%S UTC', errors='raise')
+                        pd.to_datetime(df[col], format='%Y-%m-%d %H:%M:%S UTC',
+                                       errors='raise')
                         columns_types[col] = DateTime
                     except ValueError:
                         columns_types[col] = String
