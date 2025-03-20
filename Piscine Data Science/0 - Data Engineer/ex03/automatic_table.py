@@ -10,23 +10,6 @@ DATABASE_URL = "postgresql://kpoilly:mysecretpassword@localhost:5432/piscineds"
 CUSTOMER_FOLDER = "/home/kpoilly/sgoinfre/subject/customer/"
 
 
-def pandas_to_postgres(dtype):
-    """
-    Return a PostgreSQL type according to the Pandas type given.
-    """
-    match dtype:
-        case pd.api.types.is_integer_dtype(dtype):
-            return Integer
-        case pd.api.types.is_float_dtype(dtype):
-            return Float
-        case pd.api.types.is_bool_dtype(dtype):
-            return Boolean
-        case pd.api.types.is_datetime64_any_dtype(dtype):
-            return DateTime
-        case _:
-            return String
-
-
 def csv_to_table(engine, csv_path):
     """
     Creaes a PostgreSQL table from a given csv
