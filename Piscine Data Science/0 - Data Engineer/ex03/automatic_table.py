@@ -1,8 +1,9 @@
 import os
 import sys
+import uuid
 import pandas as pd
 from sqlalchemy import create_engine, Table, Column, \
-     Integer, String, Float, Boolean, DateTime, MetaData
+     Integer, String, Float, Boolean, UUID, DateTime, MetaData
 from datetime import datetime
 
 
@@ -41,7 +42,11 @@ def csv_to_table(engine, csv_path):
                                        errors='raise')
                         columns_types[col] = DateTime
                     except ValueError:
-                        columns_types[col] = String
+                        try:
+                            uuid.UUID(df[col].iloc[0])
+                            columns_types[col] = UUID
+                        except ValueError:
+                            columns_types[col] = String
 
         for col in df.columns:
             columns.append(Column(col, columns_types[col]))
