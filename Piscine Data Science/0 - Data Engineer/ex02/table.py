@@ -40,7 +40,7 @@ def csv_to_table(engine, csv_path):
                     try:
                         pd.to_datetime(df[col], format='%Y-%m-%d %H:%M:%S UTC',
                                        errors='raise')
-                        columns_types[col] = DateTime
+                        columns_types[col] = DateTime(timezone=True)
                     except ValueError:
                         try:
                             uuid.UUID(df[col].iloc[0])
