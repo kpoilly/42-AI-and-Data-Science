@@ -34,7 +34,8 @@ def csv_to_table(engine, csv_path):
                 else:
                     columns_types[col] = Float
             except ValueError:
-                if df[col].astype(str).str.lower().isin(['true', 'false']).all():
+                if df[col].astype(str).str.lower()\
+                   .isin(['true', 'false']).all():
                     columns_types[col] = Boolean
                 else:
                     try:
