@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=kpoilly
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=piscineds
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=kpoilly@42.student.fr
+      - PGADMIN_DEFAULT_PASSWORD=kpoilly
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
