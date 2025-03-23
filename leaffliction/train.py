@@ -15,21 +15,21 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
     model = model.Sequential()
     model.add(layers.Rescaling(1.0 / 255))
     model.add(layers.BatchNormalization())
-    model.add(layers.Conv2D(nb_filters, (3, 3), activation="relu"))
+    model.add(layers.Conv2D(nb_filters, (3, 3), activation="ReLU"))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.BatchNormalization())
-    model.add(layers.Conv2D(nb_filters, (3, 3), activation="relu"))
+    model.add(layers.Conv2D(nb_filters, (3, 3), activation="ReLU"))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.BatchNormalization())
-    model.add(layers.Conv2D(32, (1, 1), activation="relu"))
+    model.add(layers.Conv2D(32, (1, 1), activation="ReLU"))
     model.add(layers.MaxPooling2D(2, 2))
     model.add(layers.Flatten())
-    model.add(layers.Dense(512, activation="relu"))
+    model.add(layers.Dense(512, activation="ReLU"))
     model.add(layers.Dropout(dropout))
-    model.add(layers.Dense(256, activation="relu"))
-    model.add(layers.Dense(nb_outputs, activation="softmax"))
+    model.add(layers.Dense(256, activation="ReLU"))
+    model.add(layers.Dense(nb_outputs, activation="Softmax"))
     model.compile(
-        optimizer="adam",
+        optimizer="ADAM",
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=["accuracy"],
     )
