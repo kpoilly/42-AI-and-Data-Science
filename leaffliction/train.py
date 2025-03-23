@@ -49,8 +49,8 @@ def train(df, df_val, nb_filters=64, dropout=0.5, epochs=100):
 
 def main():
     # Replace with argparse
-    df_train_path = "./data/data_train.csv"
-    df_val_path = "./data/data_validation.csv"
+    df_train_path = "./data/Apple_scab"
+    df_val_path = "./data/Apple_scab"
     
     # Add nb epochs, nb filters, dropout and other
     # training settings with argparse
