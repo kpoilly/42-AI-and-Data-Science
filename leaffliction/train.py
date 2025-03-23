@@ -52,16 +52,16 @@ Convolution filters: {nb_filters}\nDropout: {dropout}")
     
     history = model.fit(df,
                         epochs=epochs,
-                        validation_data=df_val
+                        validation_data=df_val,
                         callbacks=[early_stop])
 
     loss, accu = model.evaluate(df_val)
     print(f"Model trained.\nLoss: {loss}\nAccuracy: {round(accu * 100, 4)}%")
 
     # Save the model etc, zip etc...
+    model.export("models/model")
 
 def main():
-    # Replace with argparse
     data_path = "data"
     
     # Add batch_size, nb epochs, nb filters, dropout and other
