@@ -59,7 +59,7 @@ Convolution filters: {nb_filters}\nDropout: {dropout}")
     print(f"Model trained.\nLoss: {loss}\nAccuracy: {round(accu * 100, 4)}%")
 
     # Save the model etc, zip etc...
-    model.export("models/model")
+    model.save("models/model.keras")
 
 def main():
     data_path = "data"
