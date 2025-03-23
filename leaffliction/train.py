@@ -9,6 +9,7 @@ from utils import load
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from tensorflow.keras.utils import image_dataset_from_directory
+from tensorflow.keras.callbacks import EarlyStopping
 
 
 def create_model(nb_outputs, nb_filters=64, dropout=0.5):
@@ -36,33 +37,43 @@ def create_model(nb_outputs, nb_filters=64, dropout=0.5):
     return model
 
 
-def train(df, df_val, nb_filters=64, dropout=0.5, epochs=10):
-    print(f"Starting model's training with Settings :\n{epochs} epochs\n\
+def train(df, df_val, nb_filters=64, dropout=0.5, epochs=10, patience=3):
+    print(f"Starting model's training with settings:\n{epochs} epochs\n\
 Convolution filters: {nb_filters}\nDropout: {dropout}")
     model = create_model(len(df.class_names), nb_filters, dropout)
-    model.fit(df, epochs=epochs, validation_data=df_val)
+    
+    early_stop = EarlyStopping(
+        monitor='val_loss',
+        patience=patience,
+        verbose=1,
+        mode='min',
+        restore_best_weights=True
+    )
+    
+    history = model.fit(df,
+                        epochs=epochs,
+                        validation_data=df_val
+                        callbacks=[early_stop])
 
     loss, accu = model.evaluate(df_val)
-    print(f"Model trained.\nLoss: {loss}\nAccuracy: {round(accu * 100, 5)}%")
+    print(f"Model trained.\nLoss: {loss}\nAccuracy: {round(accu * 100, 4)}%")
 
     # Save the model etc, zip etc...
 
 def main():
     # Replace with argparse
-    df_train_path = "data"
-    df_val_path = "data"
+    data_path = "data"
     
     # Add batch_size, nb epochs, nb filters, dropout and other
     # training settings with argparse
     
     try:
-        df_train = load(df_train_path)
-        df_val = load(df_val_path)
+        df_train, df_val = load(data_path, 32)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
         exit()
     
-    train(df_train, df_val, 64, 0.5, 2)
+    train(df_train, df_val, 64, 0.5, 3)
 
 
 if __name__ == "__main__":
