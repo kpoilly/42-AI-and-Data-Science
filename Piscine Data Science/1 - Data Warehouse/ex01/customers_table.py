@@ -4,7 +4,6 @@ import uuid
 import pandas as pd
 from sqlalchemy import create_engine, Table, Column, \
      Integer, String, Float, Boolean, UUID, DateTime, MetaData
-from datetime import datetime
 
 
 DATABASE_URL = "postgresql://kpoilly:mysecretpassword@localhost:5432/piscineds"
@@ -24,7 +23,11 @@ def csv_to_table(engine, csv_path):
 
         columns = []
         columns_types = {}
-        columns.append(Column('Datetime', DateTime, default=datetime.utcnow))
+
+        df['Datetime'] = str(pd.Timestamp('now'))
+        cols = df.columns.tolist()
+        cols = ['Datetime'] + [col for col in cols if col != 'Datetime']
+        df = df[cols]
 
         for col in df.columns:
             try:
@@ -54,7 +57,8 @@ def csv_to_table(engine, csv_path):
 
         Table(tablename, metadata, *columns)
         metadata.create_all(engine)
-        print(f"Table {tablename} created from {filename}.")
+        df.to_sql(tablename, engine, if_exists='append', index=False)
+        print(f"Table {tablename} filled from {filename}.")
 
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
@@ -69,7 +73,7 @@ def main():
         return
 
     for csv in os.listdir(CUSTOMER_FOLDER):
-        if csv.endswith('.csv'):
+        if csv.startswith('data_202') and csv.endswith('.csv'):
             csv_to_table(engine, os.path.join(CUSTOMER_FOLDER, csv))
 
 
