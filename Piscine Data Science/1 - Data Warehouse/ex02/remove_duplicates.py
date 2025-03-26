@@ -1,33 +1,36 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, inspect
 
 
 query = """
 WITH RowNumCTE AS (
     SELECT
         *,
-        ROW_NUMBER() OVER (PARTITION BY kpoilly, kpoilly@42.student.fr
-                           ORDER BY ) AS rn
+        ROW_NUMBER() OVER (PARTITION BY {columns_list} ORDER BY (SELECT NULL)) AS rn
     FROM
-        Customers
+        customers
 )
-DELETE FROM Customers
-WHERE customerid IN (SELECT customerid FROM RowNumCTE WHERE rn > 1);
+DELETE FROM customers
+WHERE rn > 1;
 """
 
 
 def main():
     try:
-        engine = create_engine('postgres://kpoilly:mysecretpassword\
-@5432/piscineds')
+        engine = create_engine('postgresql://kpoilly:mysecretpassword@localhost:5432/piscineds')
+        inspector = inspect(engine)
+        columns = inspector.get_columns('customers')
+        column_names = ['customers.' + col['name'] for col in columns]
+        columns_list = ', '.join(column_names)
+
         with engine.connect() as connection:
-            connection.execute(text(query))
+            connection.execute(text(query.format(columns_list=columns_list)))
             connection.commit()
-            print("Duplicates rows deleted from Customers")
+            print("Duplicate raows deleted from customers")
     except Exception as e:
         print(f"Error: {str(e)}")
         exit()
     engine.dispose()
-
+    
 
 if __name__ == "__main__":
     main()
