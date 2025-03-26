@@ -17,7 +17,7 @@ WHERE customerid IN (SELECT customerid FROM RowNumCTE WHERE rn > 1);
 
 def main():
     try:
-        engine = create_engine('postgresql://kpoilly:mysecretpassword\
+        engine = create_engine('postgres://kpoilly:mysecretpassword\
 @5432/piscineds')
         with engine.connect() as connection:
             connection.execute(text(query))
