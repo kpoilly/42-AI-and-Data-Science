@@ -1,5 +1,5 @@
 # Piscine Data Science Module 04
-## RandomForestClassifier, KNN, Logistic Regression, Voting Classifier...
+## DecisionTreeClassifier, KNN, Logistic Regression, Voting Classifier...
 
 
 ![image](https://github.com/user-attachments/assets/78c37948-ff35-4aea-ba68-6ca8adcee3b5)
