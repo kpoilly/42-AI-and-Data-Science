@@ -16,6 +16,7 @@ def csv_to_table(engine, csv_path):
     """
     filename = os.path.basename(csv_path)
     tablename = 'customers'
+    print(f"Filling Table {tablename} from {filename}...")
 
     try:
         df = pd.read_csv(csv_path)
