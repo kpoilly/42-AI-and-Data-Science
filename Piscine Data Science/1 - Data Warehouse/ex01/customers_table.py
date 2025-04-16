@@ -13,7 +13,7 @@ CUSTOMER_FOLDER = "/home/kpoilly/sgoinfre/subject/customer/"
 
 def csv_to_table(engine, csv_path):
     """
-    Creaes a PostgreSQL table from a given csv
+    Creates a PostgreSQL table from a given csv
     """
     filename = os.path.basename(csv_path)
     tablename = 'customers'
