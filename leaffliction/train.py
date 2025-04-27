@@ -1,81 +1,65 @@
+#!./leaf_venv/bin/python3
+
 import os
 import sys
-import cv2
-import numpy as np
-import pandas as pd
+import argparse
 
-from utils import load
+from train import train, load_split_dataset
 
-import tensorflow as tf
-from tensorflow.keras import layers, models
-from tensorflow.keras.utils import image_dataset_from_directory
-from tensorflow.keras.callbacks import EarlyStopping
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
-def create_model(nb_outputs, nb_filters=64, dropout=0.5):
-    model = models.Sequential([
-        layers.Rescaling(1.0 / 255),
-        layers.BatchNormalization(),
-        layers.Conv2D(nb_filters, (3, 3), activation="relu"),
-        layers.MaxPooling2D(2, 2),
-        layers.BatchNormalization(),
-        layers.Conv2D(nb_filters, (3, 3), activation="relu"),
-        layers.MaxPooling2D(2, 2),
-        layers.BatchNormalization(),
-        layers.Conv2D(32, (1, 1), activation="relu"),
-        layers.MaxPooling2D(2, 2),
-        layers.Flatten(),
-        layers.Dense(512, activation="relu"),
-        layers.Dropout(dropout),
-        layers.Dense(256, activation="relu"),
-        layers.Dense(nb_outputs, activation="softmax")
-    ])
-    model.compile(
-        optimizer="adam",
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-        metrics=["accuracy"],
-    )
-    return model
+def train_model(name, dataset_path, args):
+    if not os.path.exists(dataset_path):
+        raise FileNotFoundError(
+            f"Dataset path '{dataset_path}' not found")
+    df_train, df_val = load_split_dataset(dataset_path, args.batch_size)
+    model = train(df_train, df_val, name, args.nb_filters,
+                  args.dropout, args.epochs, args.patience)
+    os.makedirs('model', exist_ok=True)
+    model.save(f"model/model_{name}.keras")
+    print(f"Model saved at 'model/model_{name}.keras'.")
 
-
-def train(df, df_val, nb_filters=64, dropout=0.5, epochs=10, patience=3):
-    print(f"Starting model's training with settings:\n{epochs} epochs\n\
-Convolution filters: {nb_filters}\nDropout: {dropout}")
-    model = create_model(len(df.class_names), nb_filters, dropout)
-    
-    early_stop = EarlyStopping(
-        monitor='val_loss',
-        patience=patience,
-        verbose=1,
-        mode='min',
-        restore_best_weights=True
-    )
-    
-    history = model.fit(df,
-                        epochs=epochs,
-                        validation_data=df_val,
-                        callbacks=[early_stop])
-
-    loss, accu = model.evaluate(df_val)
-    print(f"Model trained.\nLoss: {loss}\nAccuracy: {round(accu * 100, 4)}%")
-
-    # Save the model etc, zip etc...
-    model.save("models/model.keras")
 
 def main():
-    data_path = "data"
-    
-    # Add batch_size, nb epochs, nb filters, dropout and other
-    # training settings with argparse
-    
-    try:
-        df_train, df_val = load(data_path, 32)
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
-    
-    train(df_train, df_val, 64, 0.5, 3)
+    data_path = "dataset"
+
+    parser = argparse.ArgumentParser(
+        description="Train the model with custom parameters.")
+    parser.add_argument("--batch_size", type=int, default=128,
+                        help="Batch size for training.")
+    parser.add_argument("--epochs", type=int, default=10,
+                        help="Number of epochs for training.")
+    parser.add_argument("--nb_filters", type=int, default=48,
+                        help="Number of filters in the convolutional layers.")
+    parser.add_argument("--dropout", type=float,
+                        default=0.3, help="Dropout rate.")
+    parser.add_argument("--patience", type=int, default=3,
+                        help="Patience for early stopping.")
+    parser.add_argument("--only", type=str, nargs="?",
+                        help="train only the model. \
+Between ['original', 'mask', 'no_bg'].")
+    args = parser.parse_args()
+
+    if args.only is not None:
+        if args.only not in ["original", "mask", "no_bg"]:
+            raise ValueError(
+                f"Invalid model name '{args.only}'. \
+Choose from ['original', 'mask', 'no_bg'].")
+        data_path = os.path.join(data_path, args.only)
+        train_model(args.only, data_path, args)
+    else:
+        # Train the model with the original augmented dataset
+        train_model("original", os.path.join(data_path, "original"), args)
+        # Train the model with the mask dataset
+        train_model("mask", os.path.join(data_path, "mask"), args)
+        # Train the model with the no_bg dataset
+        train_model("no_bg", os.path.join(data_path, "no_bg"), args)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        exit()

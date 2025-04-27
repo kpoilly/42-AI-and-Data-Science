@@ -1,25 +1,41 @@
-import tensorflow as tf
-from tensorflow.keras import models
+#!./leaf_venv/bin/python3
+
+import os
+import sys
+from predict import predict
+from utils import Argument, StaticValidators
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
+def arguments_logic():
+    cls = Argument(
+        "Create images with different transformation \
+from an image passed as parameters")
+    cls.add_argument(
+        "file",
+        str,
+        "Path to the img file",
+    )
+    args = cls.get_args()
+    cls.add_validator(StaticValidators.validate_path, args.file)
+    cls.validate()
+    return args
 
-def predict(image_path, model):
-    # Load image
-    # Transform image
-    # make prediction for each image
-    # argmax is our pred
-    pass
 
+def main(args):
+    image_path = args.file
 
-def main():
-    # A recup en argparse
-    to_predict_path = ""
-    model_path = "models/model.keras"
-    model = models.load_model(model_path)
-    
-    print(f"Model @{model_path} loaded.")
-    print(model.summary())
-    
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"image file '{image_path}' not found.")
+    models_name = ["original", "mask", "no_bg"]
+    predict(image_path, models_name)
+
 
 if __name__ == "__main__":
-    main()
+    try:
+        args = arguments_logic()
+        main(args)
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        exit(1)
