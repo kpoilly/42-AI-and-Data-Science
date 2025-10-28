@@ -67,7 +67,7 @@ def analyze_user_events(db_params, table_name):
         plt.show()
 
     except (Exception, psycopg2.DatabaseError) as error:
-        print(f"\nAN ERROR OCCURRED: {error}", file=sys.stderr)
+        print(f"\nError: {error}", file=sys.stderr)
     finally:
         if conn:
             conn.close()
