@@ -1,65 +1,97 @@
-import csv
+import os
+import sys
+import time
+
+import psycopg2
 import pandas as pd
-from sqlalchemy import create_engine, text, inspect
+
+# --- Settings ---
+db_params = {
+    "host": "localhost",
+    "database": "piscineds",
+    "user": "kpoilly",
+    "password": "mysecretpassword"
+}
+main_table = 'customers'
+new_csv_folder_path = '../data/item'
+join_key = 'product_id'
 
 
-def main():
-    print("Adding item.csv to customers...")
+def enrich_main_table(db_params, main_table, join_key, csv_path):
+    """
+    Enriches a main table with data from new CSV files using a staging table.
+
+    :param db_params: Database connection details.
+    :param main_table: The target table to enrich (e.g., 'customers').
+    :param staging_table: A temporary name for the staging table.
+    :param join_key: The column name to use for the JOIN operation.
+    :param csv_path: The folder path containing the new CSV files.
+    """
+    conn = None
+    start_time = time.time()
+    staging_table = "staging_items"
+    new_table = f"{main_table}_new"
+    
     try:
-        engine = create_engine('postgresql://kpoilly:mysecretpassword@localhost:5432/piscineds')
-        inspector = inspect(engine)
-        customer_columns = [col['name'] for col in inspector.get_columns('customers')]
+        conn = psycopg2.connect(**db_params)
+        print("Successfully connected to the PostgreSQL database.")
 
-        with open('/home/kpoilly/sgoinfre/subject/item/item.csv', 'r') as csvfile:
-            reader = csv.DictReader(csvfile)
+        with conn.cursor() as cur:
+            print(f"\nImporting data to staging table '{staging_table}'...")
+            first_csv = next((os.path.join(csv_path, f) for f in os.listdir(csv_path) if f.endswith('.csv')), None)
+            if not first_csv:
+                print(f"Error: No CSV files found in '{csv_path}'. Aborting.", file=sys.stderr)
+                return
 
-            with engine.connect() as connection:
-                for row in reader:
-                    product_id = row.get('product_id')
-                    insert_columns = []
-                    insert_values = {}
+            df = pd.read_csv(first_csv, nrows=100)
+            type_mapping = {'int64': 'BIGINT', 'float64': 'DOUBLE PRECISION', 'object': 'TEXT'}
+            sql_columns = [f'"{col}" {type_mapping.get(str(df.dtypes[col]), "TEXT")}' for col in df.columns]
+            cur.execute(f"DROP TABLE IF EXISTS {staging_table};")
+            cur.execute(f"CREATE TABLE {staging_table} ({', '.join(sql_columns)});")
 
-                    if 'Datetime' in customer_columns:
-                        insert_columns.append('"Datetime"')
-                        insert_values['Datetime'] = str(pd.Timestamp('now'))
+            for filename in os.listdir(csv_path):
+                if filename.endswith('.csv'):
+                    file_path = os.path.join(csv_path, filename)
+                    print(f"Loading file: {filename}")
+                    sql_copy = f"COPY {staging_table} FROM stdin WITH CSV HEADER DELIMITER as ','"
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        cur.copy_expert(sql=sql_copy, file=f)
 
-                    if 'event_time' in customer_columns:
-                        insert_columns.append('event_time')
-                        insert_values['event_time'] = insert_values['Datetime']
+            print(f"\nCreating new table '{new_table}'...")
+            staging_columns = [f's."{col}"' for col in df.columns if col != join_key]
+            create_query = f"""
+            CREATE TABLE {new_table} AS
+            SELECT
+                m.*,
+                {', '.join(staging_columns)}
+            FROM
+                {main_table} AS m
+            LEFT JOIN
+                {staging_table} AS s ON m."{join_key}" = s."{join_key}";
+            """
+            cur.execute(create_query)
+            print(f"new table '{new_table}' created successfully.")
 
-                    if 'product_id' in customer_columns:
-                        insert_columns.append('product_id')
-                        insert_values['product_id'] = product_id if product_id else None
+            print("\nSwapping old table with the new one...")
+            cur.execute(f"DROP TABLE {main_table};")
+            cur.execute(f"ALTER TABLE {new_table} RENAME TO {main_table};")
+            print("Table swap complete.")
 
-                    if 'price' in customer_columns:
-                        insert_columns.append('price')
-                        insert_values['price'] = None
+            print(f"\nCleaning temp table...")
+            cur.execute(f"DROP TABLE {staging_table};")
+            conn.commit()
 
-                    if 'user_id' in customer_columns:
-                        insert_columns.append('user_id')
-                        insert_values['user_id'] = None
-
-                    if 'user_session' in customer_columns:
-                        insert_columns.append('user_session')
-                        insert_values['user_session'] = None
-
-                    if insert_columns:
-                        columns_str = ', '.join(insert_columns)
-                        placeholders_str = ', '.join([f':{key}' for key in insert_values.keys()])
-                        insert_query = text(f"""
-                            INSERT INTO customers ({columns_str})
-                            VALUES ({placeholders_str})
-                        """)
-                        connection.execute(insert_query, insert_values)
-
-                connection.commit()
-                print("item.csv added to customers table.")
-
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        exit()
-    engine.dispose()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(f"\nAN ERROR OCCURRED: {error}", file=sys.stderr)
+        if conn is not None:
+            print("Rolling back transaction...")
+            conn.rollback()
+    finally:
+        if conn is not None:
+            conn.close()
+            print("\nDatabase connection closed.")
+        print(f"Enrichment process finished. ({time.time() - start_time:.2f}s)")
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    enrich_main_table(db_params, main_table, join_key, new_csv_folder_path)

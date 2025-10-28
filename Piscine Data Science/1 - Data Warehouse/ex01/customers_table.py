@@ -1,82 +1,109 @@
 import os
-import sys
-import uuid
+import time
+
+import psycopg2
 import pandas as pd
-from sqlalchemy import create_engine, Table, Column, \
-     Integer, String, Float, Boolean, UUID, DateTime, MetaData
 
 
-DATABASE_URL = "postgresql://kpoilly:mysecretpassword@localhost:5432/piscineds"
-CUSTOMER_FOLDER = "/home/kpoilly/sgoinfre/subject/customer/"
+# --- Settings ---
+db_params = {
+    "host": "localhost",
+    "database": "piscineds",
+    "user": "kpoilly",
+    "password": "mysecretpassword"
+}
+csv_folder_path = '../data/customer'
+table_name = 'customers'
+type_overrides = {
+    "event_time": "TIMESTAMP WITH TIME ZONE",
+    "user_session": "UUID"
+}
 
 
-def csv_to_table(engine, csv_path):
+def create_table(conn, table_name, csv_folder_path):
     """
-    Creates a PostgreSQL table from a given csv
+    Analyse le premier fichier CSV trouvé pour en déduire le schéma
+    et crée la table dans PostgreSQL si elle n'existe pas.
     """
-    filename = os.path.basename(csv_path)
-    tablename = 'customers'
-    print(f"Filling Table {tablename} from {filename}...")
+    try:
+        file = None
+        for filename in os.listdir(csv_folder_path):
+            if filename.endswith('.csv'):
+                file = os.path.join(csv_folder_path, filename)
+                break
+        if not file:
+            print("No CSV file found in the folder. Table creation aborted.")
+            return
+
+        print(f"\nAnalyzing reference file '{os.path.basename(file)}' for schema...")
+        df = pd.read_csv(file, nrows=100)
+        type_mapping = {
+            'int64': 'BIGINT',
+            'float64': 'DOUBLE PRECISION',
+            'bool': 'BOOLEAN',
+            'datetime64[ns]': 'TIMESTAMP',
+            'object': 'TEXT'
+        }
+
+        colonnes_sql = []
+        for col_name, col_type in df.dtypes.items():
+            col_name_safe = ''.join(e for e in col_name if e.isalnum() or e == '_')
+            if col_name in type_overrides:
+                sql_type = type_overrides[col_name]
+            else:
+                sql_type = type_mapping.get(str(col_type), 'TEXT')
+            colonnes_sql.append(f'"{col_name_safe}" {sql_type}')
+
+        create_table_query = f'CREATE TABLE IF NOT EXISTS {table_name} ({", ".join(colonnes_sql)});'
+        cur = conn.cursor()
+        print(f"\nTrying to reach table '{table_name}' (or creating it)...")
+        cur.execute(create_table_query)
+        conn.commit()
+        cur.close()
+        print(f"Table '{table_name}' ready.\n")
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(f"Error when creating table: {error}")
+        raise
+
+def csv_to_postgres(db_params, csv_folder_path, table_name):
+    """
+    Charge tous les fichiers CSV d'un dossier dans une table PostgreSQL,
+    en créant la table au préalable si elle n'existe pas.
+    """
+    conn = None
+    start_time = time.time()
 
     try:
-        df = pd.read_csv(csv_path)
-        metadata = MetaData()
+        conn = psycopg2.connect(**db_params)
+        print("Connected to Postgres Database.")
 
-        columns = []
-        columns_types = {}
+        create_table(conn, table_name, csv_folder_path)
 
-        df['Datetime'] = str(pd.Timestamp('now'))
-        cols = df.columns.tolist()
-        cols = ['Datetime'] + [col for col in cols if col != 'Datetime']
-        df = df[cols]
+        cur = conn.cursor()
+        for filename in os.listdir(csv_folder_path):
+            if filename.startswith('data_202') and filename.endswith('.csv'):
+                file_path = os.path.join(csv_folder_path, filename)
+                print(f"Loading file: {filename}")
 
-        for col in df.columns:
-            try:
-                pd.to_numeric(df[col], errors='raise')
-                if df[col].astype(float).apply(lambda x: x.is_integer()).all():
-                    columns_types[col] = Integer
-                else:
-                    columns_types[col] = Float
-            except ValueError:
-                if df[col].astype(str).str.lower()\
-                   .isin(['true', 'false']).all():
-                    columns_types[col] = Boolean
-                else:
-                    try:
-                        pd.to_datetime(df[col], format='%Y-%m-%d %H:%M:%S UTC',
-                                       errors='raise')
-                        columns_types[col] = DateTime(timezone=True)
-                    except ValueError:
-                        try:
-                            uuid.UUID(df[col].iloc[0])
-                            columns_types[col] = UUID
-                        except ValueError:
-                            columns_types[col] = String
+                sql_copy = f"""
+                    COPY {table_name} FROM stdin WITH CSV HEADER DELIMITER as ','
+                """
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    cur.copy_expert(sql=sql_copy, file=f)
 
-        for col in df.columns:
-            columns.append(Column(col, columns_types[col]))
+        conn.commit()
+        print(f"\nAll csv files have been copied to table '{table_name}'. ({time.time() - start_time:.2f}s)")
 
-        Table(tablename, metadata, *columns)
-        metadata.create_all(engine)
-        df.to_sql(tablename, engine, if_exists='append', index=False)
-        print(f"Table {tablename} filled from {filename}.")
-
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(f"Error: {error}")
+        if conn is not None:
+            conn.rollback()
+    finally:
+        if conn is not None:
+            conn.close()
+            print("Disconnected from Postgres Database.")
 
 
-def main():
-    engine = create_engine(DATABASE_URL)
-
-    if not os.path.exists(CUSTOMER_FOLDER):
-        print(f"Error: Cannot found Customer folder at {CUSTOMER_FOLDER}.",
-              file=sys.stderr)
-        return
-
-    for csv in os.listdir(CUSTOMER_FOLDER):
-        if csv.startswith('data_202') and csv.endswith('.csv'):
-            csv_to_table(engine, os.path.join(CUSTOMER_FOLDER, csv))
-
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    csv_to_postgres(db_params, csv_folder_path, table_name)
