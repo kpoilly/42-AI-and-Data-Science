@@ -1,4 +1,3 @@
-from curses import start_color
 import sys
 import time
 
@@ -10,14 +9,14 @@ db_params = {
     "host": "localhost",
     "database": "piscineds",
     "user": "kpoilly",
-    "password": "mysecretpassword"
+    "password": "mysecretpassword",
 }
-table_name = 'customers'
+table_name = "customers"
 
 
 def remove_duplicates(db_params, table_name):
     """
-    Removes duplicate rows from a PostgreSQL table based on a set of columns.
+    Removes duplicate rows from a Postgres table based on a set of columns.
 
     :param db_params: A dictionary with database connection parameters.
     :param table_name: The name of the table to clean.
@@ -26,13 +25,12 @@ def remove_duplicates(db_params, table_name):
     conn = None
     start_time = time.time()
     deleted_rows_count = 0
-    
+
     try:
         conn = psycopg2.connect(**db_params)
-        print("Successfully connected to the PostgreSQL database.")
+        print("Successfully connected to Postgre database.")
 
         with conn.cursor() as cur:
-            print(f"Fetching column list for table '{table_name}'...")
             info_schema_query = """
             SELECT column_name
             FROM information_schema.columns
@@ -40,9 +38,10 @@ def remove_duplicates(db_params, table_name):
             """
             cur.execute(info_schema_query, (table_name,))
             columns = cur.fetchall()
-
             if not columns:
-                print(f"Error: Could not find table '{table_name}' or it has no columns. Aborting.")
+                print(
+                    f"Error: Could not find table '{table_name}'. Aborting."
+                )
                 sys.exit(1)
 
             column_names = [col[0] for col in columns]
@@ -51,7 +50,10 @@ def remove_duplicates(db_params, table_name):
             WITH NumberedRows AS (
                 SELECT
                     ctid,
-                    ROW_NUMBER() OVER (PARTITION BY {partition_by_clause} ORDER BY ctid) as row_num
+                    ROW_NUMBER() OVER (
+                        PARTITION BY {partition_by_clause}
+                        ORDER BY ctid
+                    ) as row_num
                 FROM
                     {table_name}
             )
@@ -62,7 +64,7 @@ def remove_duplicates(db_params, table_name):
                 WHERE row_num > 1
             );
             """
-            print(f"Removing duplicates...")
+            print("Removing duplicates...")
             cur.execute(query)
             deleted_rows_count = cur.rowcount
             conn.commit()
@@ -76,9 +78,12 @@ def remove_duplicates(db_params, table_name):
         if conn is not None:
             conn.close()
             print("\nDatabase connection closed.")
-            print(f"Operation complete. Number of duplicate rows removed: {deleted_rows_count}. ({time.time() - start_time:.2f}s)")
+            print(
+                f"Operation complete. Number of duplicate rows removed: "
+                f"{deleted_rows_count}. ({time.time() - start_time:.2f}s)"
+            )
     return deleted_rows_count
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     remove_duplicates(db_params, table_name)
