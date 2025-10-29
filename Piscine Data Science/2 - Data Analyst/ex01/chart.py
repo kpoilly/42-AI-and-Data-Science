@@ -19,8 +19,8 @@ table_name = "customers"
 
 def analyze_user_events(db_params, table_name):
     """
-    Se connecte à la base de données, analyse les données d'achat sur une période donnée
-    et génère un tableau de bord de 3 graphiques.
+    Se connecte à la base de données, analyse les données d'achat
+    sur une période donnée et génère un tableau de bord de 3 graphiques.
     """
     conn = None
     print("Starting user event analysis...")
@@ -88,15 +88,16 @@ def analyze_user_events(db_params, table_name):
         # --- Nombre de clients par jour ---
         ax1 = axes[0]
         sns.lineplot(
-            data=df_daily_customers, x="purchase_date", y="daily_customers", ax=ax1
-        )
+            data=df_daily_customers, x="purchase_date",
+            y="daily_customers", ax=ax1)
         ax1.set_ylabel("Number of customers")
         ax1.set_xlabel("")
         ax1.set_title("Daily Unique Customers", fontsize=14)
 
         # --- Ventes totales par mois ---
         ax2 = axes[1]
-        df_monthly_sales["month_label"] = df_monthly_sales["purchase_month"].dt.strftime("%b")
+        df_monthly_sales["month_label"] = df_monthly_sales["purchase_month"]\
+            .dt.strftime("%b")
         sns.barplot(
             data=df_monthly_sales,
             x="month_label",
@@ -125,8 +126,8 @@ def analyze_user_events(db_params, table_name):
             ax.xaxis.set_major_locator(mdates.MonthLocator())
             ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
             ax.set_xlim(
-                [df_daily_customers["purchase_date"].min(), df_daily_customers["purchase_date"].max()]
-            )
+                [df_daily_customers["purchase_date"].min(),
+                 df_daily_customers["purchase_date"].max()])
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.96])
         plt.show()

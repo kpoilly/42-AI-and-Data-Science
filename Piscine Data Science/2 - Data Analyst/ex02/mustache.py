@@ -90,7 +90,8 @@ def generate_price_boxplots(db_params, table_name):
         # --- Prix des paniers par session ---
         ax3 = axes[2]
         sns.boxplot(
-            data=df_baskets, x="avg_user_basket_price", ax=ax3, color="skyblue")
+            data=df_baskets, x="avg_user_basket_price",
+            ax=ax3, color="skyblue")
         ax3.set_title("Average Basket Price per User")
         ax3.set_xlim(-50, 200)
 

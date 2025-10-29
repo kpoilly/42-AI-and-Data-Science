@@ -16,8 +16,8 @@ table_name = "customers"
 
 def analyze_user_events(db_params, table_name):
     """
-    Se connecte à la base de données, analyse la répartition des types d'événements
-    et génère un diagramme circulaire.
+    Se connecte à la base de données, analyse la répartition
+    des types d'événements et génère un diagramme circulaire.
     """
     conn = None
     print("Starting user event analysis...")
