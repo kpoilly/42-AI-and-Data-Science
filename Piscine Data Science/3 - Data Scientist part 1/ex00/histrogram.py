@@ -1,20 +1,18 @@
 import sys
+
+import pandas as pd
 import matplotlib.pyplot as plt
 
-from load_csv import load
+
+DATASET_PATH = "../Train_knight.csv"
 
 
-def draw_single(path):
+def draw_single(df):
     """
     Draw histogram of a file based on a single class (Knight in our case)
     """
-    try:
-        df = load(path)
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
-
     print("Generating Histrogram_single.jpg...")
+
     nb_cols = len(df.columns)
     nb_rows = (nb_cols) // 5
 
@@ -31,24 +29,21 @@ def draw_single(path):
 
     plt.tight_layout()
     plt.savefig("Histrogram_single.jpg")
+    print("Histrogram_single.jpg generated.")
+    plt.close()
 
 
-def draw_double(path):
+def draw_double(df):
     """
     Draw histogram of a file based on 2 classes (Jedi and Sith in our case)
     """
-    try:
-        df = load(path)
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
-
     print("Generating Histrogram_double.jpg...")
+
     graphs_name = [col for col in df.columns if col != 'knight']
     nb_cols = len(graphs_name)
     nb_rows = (nb_cols) // 5
 
-    fig, axes = plt.subplots(nrows=nb_rows, ncols=min(nb_cols, 5),
+    _, axes = plt.subplots(nrows=nb_rows, ncols=min(nb_cols, 5),
                              figsize=(15, 2.5 * nb_rows))
     axes = axes.flatten()
 
@@ -67,11 +62,20 @@ def draw_double(path):
 
     plt.tight_layout()
     plt.savefig("Histrogram_double.jpg")
+    print("Histrogram_double.jpg generated.")
+    plt.close()
 
 
 def main():
-    draw_single("../Test_knight.csv")
-    draw_double("../Train_knight.csv")
+    try:
+        df = pd.read_csv(DATASET_PATH, sep=',', header=0)
+        print(f"dataset file '{DATASET_PATH}' loaded successfully.")
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        exit()
+
+    draw_single(df)
+    draw_double(df)
 
 
 if __name__ == "__main__":
