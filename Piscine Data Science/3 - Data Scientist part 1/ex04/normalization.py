@@ -1,7 +1,11 @@
 import sys
+
+import pandas as pd
 import matplotlib.pyplot as plt
 
-from load_csv import load
+
+TEST_SET_PATH = "../Test_knight.csv"
+TRAIN_SET_PATH = "../Train_knight.csv"
 
 
 def draw_scatter(df, x, y, single=False):
@@ -40,20 +44,29 @@ def normalize(df):
 
 def main():
     try:
-        df = load("../Test_knight.csv")
-        df2 = load("../Train_knight.csv")
+        df = pd.read_csv(TEST_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{TEST_SET_PATH}' loaded successfully.")
+
+        print(f"Before norm:\n{df.head()}")
+        df_norm = normalize(df)
+        print(f"After norm:\n{df_norm.head()}")
+
+        draw_scatter(df_norm, 'Empowered', 'Stims', single=True)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
 
-    print(f"Before norm:\n{df.head()}")
-    df_norm = normalize(df)
-    print(f"After norm:\n{df_norm.head()}")
-    df2_norm = normalize(df2.drop(columns='knight'))
-    df2_norm['knight'] = df2['knight']
+    try:
+        df = pd.read_csv(TRAIN_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{TRAIN_SET_PATH}' loaded successfully.")
 
-    draw_scatter(df_norm, 'Empowered', 'Stims', single=True)
-    draw_scatter(df2_norm, 'Empowered', 'Stims')
+        print(f"Before norm:\n{df.head()}")
+        df_norm = normalize(df.drop(columns='knight'))
+        df_norm['knight'] = df['knight']
+        print(f"After norm:\n{df_norm.head()}")
+
+        draw_scatter(df_norm, 'Empowered', 'Stims')
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
 
 
 if __name__ == "__main__":

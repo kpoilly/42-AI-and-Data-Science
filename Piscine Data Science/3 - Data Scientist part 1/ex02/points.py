@@ -1,19 +1,17 @@
 import sys
+
+import pandas as pd
 import matplotlib.pyplot as plt
 
-from load_csv import load
+
+TEST_SET_PATH = "../Test_knight.csv"
+TRAIN_SET_PATH = "../Train_knight.csv"
 
 
-def draw_scatter(path, x, y, single=False):
+def draw_scatter(df, x, y, single=False):
     """
     Draw scatter of a file based on a csv file
     """
-    try:
-        df = load(path)
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
-
     print(f"Generating {x}x{y}_{'single' if single else ''}.jpg...")
     plt.figure(figsize=(8, 6))
 
@@ -35,11 +33,21 @@ def draw_scatter(path, x, y, single=False):
 
 
 def main():
-    draw_scatter("../Test_knight.csv", 'Empowered', 'Stims', single=True)
-    draw_scatter("../Test_knight.csv", 'Push', 'Deflection', single=True)
+    try:
+        df = pd.read_csv(TEST_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{TEST_SET_PATH}' loaded successfully.")
+        draw_scatter(df, 'Empowered', 'Stims', single=True)
+        draw_scatter(df, 'Push', 'Deflection', single=True)
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
 
-    draw_scatter("../Train_knight.csv", 'Empowered', 'Stims')
-    draw_scatter("../Train_knight.csv", 'Push', 'Deflection')
+    try:
+        df = pd.read_csv(TRAIN_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{TRAIN_SET_PATH}' loaded successfully.")
+        draw_scatter(df, 'Empowered', 'Stims')
+        draw_scatter(df, 'Push', 'Deflection')
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
 
 
 if __name__ == "__main__":

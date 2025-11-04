@@ -4,7 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-DATASET_PATH = "../Train_knight.csv"
+TEST_SET_PATH = "../Test_knight.csv"
+TRAIN_SET_PATH = "../Train_knight.csv"
 
 
 def draw_single(df):
@@ -68,14 +69,18 @@ def draw_double(df):
 
 def main():
     try:
-        df = pd.read_csv(DATASET_PATH, sep=',', header=0)
-        print(f"dataset file '{DATASET_PATH}' loaded successfully.")
+        df = pd.read_csv(TEST_SET_PATH, sep=',', header=0)
+        print(f"dataset file '{TEST_SET_PATH}' loaded successfully.")
+        draw_single(df)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
 
-    draw_single(df)
-    draw_double(df)
+    try:
+        df = pd.read_csv(TRAIN_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{TRAIN_SET_PATH}' loaded successfully.")
+        draw_double(df)
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
 
 
 if __name__ == "__main__":
