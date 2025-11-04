@@ -1,18 +1,20 @@
 import sys
+
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from load_csv import load
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 
-def variances(path):
-    try:
-        df = load(path)
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
+TRAIN_SET_PATH = "../Train_knight.csv"
+
+
+def variances(df):
+    """
+    Calculate variances and cumulative variances using PCA
+    """
 
     mapping = {'Jedi': 1, 'Sith': 0}
     df['knight_nb'] = df['knight'].map(mapping)
@@ -27,12 +29,18 @@ def variances(path):
 
     var = pca.explained_variance_ratio_
     cumul_var = np.cumsum(var)
-
     return var, cumul_var * 100
 
 
 def main():
-    var, cumul_var = variances("../Train_knight.csv")
+    try:
+        df = pd.read_csv(TRAIN_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{TRAIN_SET_PATH}' loaded successfully.")
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        exit()
+
+    var, cumul_var = variances(df)
     print(f"\nVariances (Percentage):\n{var}\n")
     print(f"Cumulative Variances (Percentage):\n{cumul_var}")
 
@@ -42,6 +50,7 @@ def main():
     plt.ylabel("Explained variance (%)")
     plt.xlabel("Number of components")
     plt.savefig("cumulative_variance.jpg")
+    print("Cumulative variance plot saved as 'cumulative_variance.jpg'")
 
 
 if __name__ == "__main__":

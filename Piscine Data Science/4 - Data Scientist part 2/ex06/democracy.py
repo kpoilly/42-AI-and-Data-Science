@@ -1,14 +1,20 @@
 import sys
+
+import pandas as pd
+
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import VotingClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
-from load_csv import load
 
 
-def predict(path_train, path_val):
+TRAIN_SET_PATH = "../data_train.csv"
+VAL_SET_PATH = "../data_validation.csv"
+
+
+def predict(df_train, df_val):
     """
     Uses VotingClassifier
     Voters:
@@ -18,13 +24,6 @@ def predict(path_train, path_val):
     Prints F1-Score (Needs to be >94%)
     Predictions in Voting.txt
     """
-    try:
-        df_train = load(path_train)
-        df_val = load(path_val)
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
-
     # Data prep
     mapping = {'Jedi': 1, 'Sith': 0}
     y_train = df_train['knight'].map(mapping)
@@ -64,7 +63,16 @@ def predict(path_train, path_val):
 
 
 def main():
-    predict("../data_train.csv", "../data_validation.csv")
+    try:
+        df_train = pd.read_csv(TRAIN_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{TRAIN_SET_PATH}' loaded successfully.")
+        df_val = pd.read_csv(VAL_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{VAL_SET_PATH}' loaded successfully.")
+
+        predict(df_train, df_val)
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        exit()
 
 
 if __name__ == "__main__":

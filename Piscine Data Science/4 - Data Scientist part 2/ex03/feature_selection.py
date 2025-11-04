@@ -1,9 +1,12 @@
 import sys
+
 import pandas as pd
 import numpy as np
 
-from load_csv import load
 from sklearn.linear_model import LinearRegression
+
+
+TRAIN_SET_PATH = "../Train_knight.csv"
 
 
 def variance_inflation_factor(df, index):
@@ -24,15 +27,10 @@ def variance_inflation_factor(df, index):
     return np.inf if r_sq == 1 else 1 / (1 - r_sq)
 
 
-def calculate_VIF(path):
+def calculate_VIF(df):
     """
     Calulates VIF and Tolerance of a given dataset
     """
-    try:
-        df = load(path)
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
-        exit()
 
     mapping = {'Jedi': 1, 'Sith': 0}
     df['knight_nb'] = df['knight'].map(mapping)
@@ -44,12 +42,18 @@ def calculate_VIF(path):
     vif_data['VIF'] = [variance_inflation_factor(X, i)
                        for i in range(len(features))]
     vif_data['Tolerance'] = 1 / vif_data['VIF']
-
     return vif_data
 
 
 def main():
-    vifs = calculate_VIF("../Train_knight.csv")
+    try:
+        df = pd.read_csv(TRAIN_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{TRAIN_SET_PATH}' loaded successfully.")
+    except Exception as e:
+        print(f"Error: {str(e)}", file=sys.stderr)
+        exit()
+
+    vifs = calculate_VIF(df)
     vifs = vifs.set_index("Feature")
     print(vifs)
 

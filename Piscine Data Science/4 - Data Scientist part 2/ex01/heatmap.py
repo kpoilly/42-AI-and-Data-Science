@@ -1,12 +1,17 @@
+from os import read
 import sys
+
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from load_csv import load
 
+
+TRAIN_SET_PATH = "../Train_knight.csv"
 
 def main():
     try:
-        df = load("../Train_knight.csv")
+        df = pd.read_csv(TRAIN_SET_PATH, sep=',', header=0)
+        print(f"\ndataset file '{TRAIN_SET_PATH}' loaded successfully.")
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
         exit()
@@ -23,6 +28,7 @@ def main():
                 yticklabels=correlations.columns)
     plt.tight_layout()
     plt.savefig("Heatmap.jpg")
+    print("Heatmap saved as 'Heatmap.jpg'")
 
 
 if __name__ == "__main__":

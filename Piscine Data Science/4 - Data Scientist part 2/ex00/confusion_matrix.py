@@ -1,7 +1,8 @@
 import sys
-import numpy as np
 
+import numpy as np
 import seaborn as sns
+
 import matplotlib.pyplot as plt
 
 
@@ -67,6 +68,7 @@ def main():
     plt.xlabel('Prediction')
     plt.tight_layout()
     plt.savefig('confusion_matrix.jpg')
+    print("Confusion matrix saved as 'confusion_matrix.jpg'")
 
 
 if __name__ == "__main__":
