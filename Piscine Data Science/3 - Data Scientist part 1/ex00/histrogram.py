@@ -17,16 +17,17 @@ def draw_single(df):
     nb_cols = len(df.columns)
     nb_rows = (nb_cols) // 5
 
-    fig, axes = plt.subplots(nrows=nb_rows, ncols=min(nb_cols, 5),
-                             figsize=(15, 2.5 * nb_rows))
+    fig, axes = plt.subplots(
+        nrows=nb_rows, ncols=min(nb_cols, 5), figsize=(15, 2.5 * nb_rows)
+    )
     axes = axes.flatten()
 
     for i, column in enumerate(df.columns):
         if i < len(axes):
-            axes[i].hist(df[column], bins=40, color='darkseagreen',
-                         label='Knight')
+            axes[i].hist(df[column], bins=40, color="darkseagreen",
+                         label="Knight")
             axes[i].set_title(column)
-            axes[i].legend(loc='upper right')
+            axes[i].legend(loc="upper right")
 
     plt.tight_layout()
     plt.savefig("Histrogram_single.jpg")
@@ -40,23 +41,24 @@ def draw_double(df):
     """
     print("Generating Histrogram_double.jpg...")
 
-    graphs_name = [col for col in df.columns if col != 'knight']
+    graphs_name = [col for col in df.columns if col != "knight"]
     nb_cols = len(graphs_name)
     nb_rows = (nb_cols) // 5
 
-    _, axes = plt.subplots(nrows=nb_rows, ncols=min(nb_cols, 5),
-                             figsize=(15, 2.5 * nb_rows))
+    _, axes = plt.subplots(
+        nrows=nb_rows, ncols=min(nb_cols, 5), figsize=(15, 2.5 * nb_rows)
+    )
     axes = axes.flatten()
 
     for i, column in enumerate(df.columns):
         if i < len(axes):
-            subset_jedi = df[df['knight'] == 'Jedi'][column]
-            axes[i].hist(subset_jedi, bins=40, color='blue', alpha=0.5,
-                         label='Jedi')
+            subset_jedi = df[df["knight"] == "Jedi"][column]
+            axes[i].hist(subset_jedi, bins=40, color="blue", alpha=0.5,
+                         label="Jedi")
 
-            subset_sith = df[df['knight'] == 'Sith'][column]
-            axes[i].hist(subset_sith, bins=40, color='tomato', alpha=0.5,
-                         label='Sith')
+            subset_sith = df[df["knight"] == "Sith"][column]
+            axes[i].hist(subset_sith, bins=40, color="tomato", alpha=0.5,
+                         label="Sith")
 
             axes[i].set_title(column)
             axes[i].legend()
@@ -69,14 +71,14 @@ def draw_double(df):
 
 def main():
     try:
-        df = pd.read_csv(TEST_SET_PATH, sep=',', header=0)
+        df = pd.read_csv(TEST_SET_PATH, sep=",", header=0)
         print(f"dataset file '{TEST_SET_PATH}' loaded successfully.")
         draw_single(df)
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
 
     try:
-        df = pd.read_csv(TRAIN_SET_PATH, sep=',', header=0)
+        df = pd.read_csv(TRAIN_SET_PATH, sep=",", header=0)
         print(f"\ndataset file '{TRAIN_SET_PATH}' loaded successfully.")
         draw_double(df)
     except Exception as e:

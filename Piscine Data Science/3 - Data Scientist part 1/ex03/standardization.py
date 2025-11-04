@@ -61,7 +61,7 @@ def main():
         df_std = standardize(df.drop(columns='knight'))
         df_std['knight'] = df['knight']
         print(f"After std:\n{df_std.head()}")
-        
+
         draw_scatter(df_std, 'Empowered', 'Stims')
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
