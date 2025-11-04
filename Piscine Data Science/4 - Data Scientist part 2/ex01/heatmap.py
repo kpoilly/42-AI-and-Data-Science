@@ -1,4 +1,3 @@
-from os import read
 import sys
 
 import pandas as pd
@@ -7,6 +6,7 @@ import matplotlib.pyplot as plt
 
 
 TRAIN_SET_PATH = "../Train_knight.csv"
+
 
 def main():
     try:
